@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Action List Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="favicon.ico" />
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+  
+  <!-- Initialize with your config -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAraOkRAPZ6RZTgeaX3QcMFRNe9qM2FsEQ",
+      authDomain: "aazad-properties.firebaseapp.com",
+      projectId: "aazad-properties",
+      storageBucket: "aazad-properties.appspot.com",
+      messagingSenderId: "275411023313",
+      appId: "1:275411023313:web:9cfaaa62b577fc1ccfdcf0",
+      measurementId: "G-Y1G9PLEG3N"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</head>
+<body>
+  <h1>AAZAD Properties: BAS – Project Integration</h1>
+  <p class="description">
+    This tracker integrates all departments for a single project. Each department can post questions or challenges to another department; everyone can see and comment on them. When you’re done, export the cards to CSV (columns: Who raised it, To whom, Date, Subject, Notes, Status).
+  </p>
+
+  <section class="form-section">
+    <h2>Add New Action</h2>
+    <form id="action-form">
+      <div class="form-group">
+        <label for="creator">Creator</label>
+        <select id="creator" required></select>
+      </div>
+      <div class="form-group">
+        <label for="title">Action Title</label>
+        <input id="title" type="text" placeholder="Action Title" required />
+      </div>
+      <div class="form-group">
+        <label for="details">Action Details</label>
+        <textarea id="details" placeholder="Describe the action..." rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status"></select>
+      </div>
+      <div class="form-group">
+        <label for="department">Responsible Department</label>
+        <select id="department" required></select>
+      </div>
+      <button type="button" id="add-action-btn">Add Action</button>
+    </form>
+  </section>
+
+  <section class="filter-section">
+    <div class="filters">
+      <div class="form-group">
+        <label for="filterStatus">Filter by Status</label>
+        <select id="filterStatus"></select>
+      </div>
+      <div class="form-group">
+        <label for="filterDept">Filter by Department</label>
+        <select id="filterDept"></select>
+      </div>
+    </div>
+  </section>
+
+  <section id="actionList" class="action-list"></section>
+
+  <div class="form-section text-center">
+    <button id="export-btn">Export as CSV</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

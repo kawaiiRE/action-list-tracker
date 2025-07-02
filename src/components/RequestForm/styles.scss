@@ -1,0 +1,44 @@
+.request-form-card {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.request-form {
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .full-width {
+    margin-bottom: 1rem;
+  }
+
+  .status-select {
+    max-width: 200px;
+    margin-bottom: 2rem;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  
+  .va-button {
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .request-form {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+}

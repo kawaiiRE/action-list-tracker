@@ -1,0 +1,57 @@
+/* Global App Styles */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Vuestic UI custom variables */
+:root {
+  --va-primary: #3B82F6;
+  --va-primary-dark: #2563EB;
+  --va-secondary: #6B7280;
+  --va-success: #10B981;
+  --va-warning: #F59E0B;
+  --va-danger: #EF4444;
+  --va-background-primary: #FFFFFF;
+  --va-background-secondary: #F9FAFB;
+  --va-background-border: #E5E7EB;
+  --va-text-primary: #111827;
+  --va-text-secondary: #6B7280;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --va-background-primary: #1F2937;
+    --va-background-secondary: #111827;
+    --va-background-border: #374151;
+    --va-text-primary: #F9FAFB;
+    --va-text-secondary: #D1D5DB;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--va-background-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--va-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--va-primary);
+}

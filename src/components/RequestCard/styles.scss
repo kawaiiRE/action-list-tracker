@@ -1,0 +1,140 @@
+.request-card {
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.request-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--va-text-primary);
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.status-badge {
+  flex-shrink: 0;
+}
+
+.request-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--va-background-border);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--va-secondary);
+}
+
+.request-details {
+  margin-bottom: 1rem;
+  
+  p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--va-text-primary);
+  }
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+}
+
+.comments-section {
+  padding-top: 1rem;
+  border-top: 1px solid var(--va-background-border);
+  
+  h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: var(--va-text-primary);
+  }
+}
+
+.loading-comments {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  color: var(--va-secondary);
+}
+
+.comments-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.comment-item {
+  padding: 0.75rem;
+  background: var(--va-background-secondary);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.comment-content {
+  p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
+
+.comment-date {
+  color: var(--va-secondary);
+  font-size: 0.8rem;
+}
+
+.no-comments {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--va-secondary);
+  font-style: italic;
+  
+  p {
+    margin: 0;
+  }
+}
+
+.add-comment-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--va-background-border);
+}
+
+@media (max-width: 768px) {
+  .card-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .request-title {
+    margin-right: 0;
+  }
+  
+  .request-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

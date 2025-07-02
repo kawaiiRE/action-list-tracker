@@ -1,0 +1,51 @@
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--va-primary);
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  color: var(--va-secondary);
+  margin-bottom: 3rem;
+}
+
+.action-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.action-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.card-icon {
+  color: var(--va-primary);
+  margin-bottom: 1rem;
+}
+
+.action-card h3 {
+  margin: 1rem 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.action-card p {
+  color: var(--va-secondary);
+  margin-bottom: 1.5rem;
+}

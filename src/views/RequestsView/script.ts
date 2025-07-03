@@ -9,6 +9,10 @@ import RequestList from '@/components/RequestList/index.vue'
 export default defineComponent({
   name: 'RequestsView',
   components: { RequestList },
+  props: {
+    category: String,
+    status: String,
+  },
   data() {
     return {
       allRequests: [] as ActionRequest[],
@@ -80,8 +84,21 @@ export default defineComponent({
       return [...new Set(creators)].sort()
     },
   },
-  async created() {
-    await this.loadRequests()
+  mounted() {
+    this.initializeFiltersFromRoute()
+    this.loadRequests()
+  },
+  watch: {
+    '$route.query': {
+      handler: 'handleQueryChange',
+      deep: true,
+    },
+    filterStatus: 'updateQueryParams',
+    filterDept: 'updateQueryParams',
+    filterCreator: 'updateQueryParams',
+    search: 'updateQueryParams',
+    sortBy: 'updateQueryParams',
+    sortOrder: 'updateQueryParams',
   },
   methods: {
     async loadRequests() {
@@ -123,6 +140,72 @@ export default defineComponent({
     },
     goToAddRequest() {
       this.$router.push('/requests/add')
+    },
+    goBack() {
+      this.$router.push('/home')
+    },
+    onViewRequest(request: any) {
+      this.$router.push(`/requests/${request.id}`)
+    },
+    initializeFiltersFromRoute() {
+      const { category, status, search, creator, sortBy, sortOrder } =
+        this.$route.query
+
+      if (category) {
+        this.filterDept = Array.isArray(category)
+          ? category[0] || ''
+          : category || ''
+      }
+      if (status) {
+        this.filterStatus = Array.isArray(status)
+          ? status[0] || ''
+          : status || ''
+      }
+      if (search) {
+        this.search = Array.isArray(search) ? search[0] || '' : search || ''
+      }
+      if (creator) {
+        this.filterCreator = Array.isArray(creator)
+          ? creator[0] || ''
+          : creator || ''
+      }
+      if (sortBy) {
+        this.sortBy = Array.isArray(sortBy)
+          ? sortBy[0] || 'createdAt'
+          : sortBy || 'createdAt'
+      }
+      if (sortOrder) {
+        this.sortOrder = Array.isArray(sortOrder)
+          ? sortOrder[0] || 'desc'
+          : sortOrder || 'desc'
+      }
+    },
+    handleQueryChange() {
+      this.initializeFiltersFromRoute()
+    },
+    updateQueryParams() {
+      const query: Record<string, any> = {}
+
+      if (this.filterStatus) {
+        query.status = this.filterStatus
+      }
+      if (this.filterDept) {
+        query.category = this.filterDept
+      }
+      if (this.filterCreator) {
+        query.creator = this.filterCreator
+      }
+      if (this.search) {
+        query.search = this.search
+      }
+      if (this.sortBy) {
+        query.sortBy = this.sortBy
+      }
+      if (this.sortOrder) {
+        query.sortOrder = this.sortOrder
+      }
+
+      this.$router.replace({ query })
     },
   },
 })

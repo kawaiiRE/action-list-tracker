@@ -1,11 +1,15 @@
 <template>
-  <va-card class="request-card">
+  <va-card
+    class="request-card"
+    @click="handleCardClick"
+    style="cursor: pointer"
+  >
     <va-card-content>
       <!-- Header with title and status -->
       <div class="card-header">
         <h3 class="request-title">{{ request.title }}</h3>
-        <va-badge 
-          :text="request.status" 
+        <va-badge
+          :text="request.status"
           :color="statusColor"
           class="status-badge"
         />
@@ -33,14 +37,22 @@
       </div>
 
       <!-- Actions -->
-      <div class="card-actions">
-        <va-button 
-          @click="toggleComments" 
-          outline 
+      <div class="card-actions" @click.stop>
+        <va-button
+          @click="viewDetails"
+          color="primary"
+          size="small"
+          icon="visibility"
+        >
+          View Details
+        </va-button>
+        <va-button
+          @click="toggleComments"
+          outline
           size="small"
           :icon="showComments ? 'expand_less' : 'expand_more'"
         >
-          {{ showComments ? 'Hide' : 'Show' }} Comments 
+          {{ showComments ? 'Hide' : 'Show' }} Comments
           <span v-if="comments.length > 0">({{ comments.length }})</span>
         </va-button>
       </div>
@@ -49,7 +61,7 @@
       <va-collapse v-model="showComments">
         <div class="comments-section">
           <h4>Comments</h4>
-          
+
           <!-- Loading comments -->
           <div v-if="loadingComments" class="loading-comments">
             <va-progress-circle indeterminate size="small" />
@@ -58,9 +70,9 @@
 
           <!-- Existing comments -->
           <div v-else-if="comments.length > 0" class="comments-list">
-            <div 
-              v-for="comment in comments" 
-              :key="comment.id" 
+            <div
+              v-for="comment in comments"
+              :key="comment.id"
               class="comment-item"
             >
               <div class="comment-content">

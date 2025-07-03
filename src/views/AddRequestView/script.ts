@@ -28,7 +28,7 @@ export default defineComponent({
       }
     },
     goBack() {
-      this.$router.back()
+      this.$router.push('/requests')
     },
   },
 })

@@ -46,6 +46,12 @@ export default defineComponent({
     },
   },
   methods: {
+    handleCardClick() {
+      this.viewDetails()
+    },
+    viewDetails() {
+      this.$router.push(`/requests/${this.request.id}`)
+    },
     async onComment(text: string) {
       if (!this.request.id) return
       this.$emit('comment', { id: this.request.id, text })

@@ -17,14 +17,18 @@ export default defineComponent({
   name: 'RequestList',
   components: { RequestCard },
   props: {
-    requests: { 
-      type: Array as PropType<Request[]>, 
-      required: true 
-    }
+    requests: {
+      type: Array as PropType<Request[]>,
+      required: true,
+    },
   },
+  emits: ['comment', 'view-request'],
   methods: {
     emitComment(payload: any) {
       this.$emit('comment', payload)
-    }
-  }
+    },
+    viewRequest(request: Request) {
+      this.$emit('view-request', request)
+    },
+  },
 })

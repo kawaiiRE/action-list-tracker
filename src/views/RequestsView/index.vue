@@ -2,10 +2,19 @@
   <va-page>
     <div class="requests-container">
       <div class="page-header">
-        <h1>All Requests</h1>
-        <va-button 
-          @click="goToAddRequest" 
-          color="primary" 
+        <div class="header-left">
+          <va-button
+            @click="goBack"
+            icon="arrow_back"
+            preset="secondary"
+            class="back-button"
+            round
+          />
+          <h1>All Requests</h1>
+        </div>
+        <va-button
+          @click="goToAddRequest"
+          color="primary"
           icon="add"
           class="add-button"
         >
@@ -66,7 +75,7 @@
                   { text: 'Created Date', value: 'createdAt' },
                   { text: 'Title', value: 'title' },
                   { text: 'Status', value: 'status' },
-                  { text: 'Creator', value: 'creator' }
+                  { text: 'Creator', value: 'creator' },
                 ]"
                 text-by="text"
                 value-by="value"
@@ -79,14 +88,14 @@
                 v-model="sortOrder"
                 :options="[
                   { text: 'Descending', value: 'desc' },
-                  { text: 'Ascending', value: 'asc' }
+                  { text: 'Ascending', value: 'asc' },
                 ]"
                 text-by="text"
                 value-by="value"
               />
             </div>
           </div>
-          
+
           <div class="filter-actions">
             <va-button @click="clearFilters" outline>
               Clear All Filters
@@ -109,6 +118,7 @@
         <request-list
           :requests="filtered"
           @comment="onAddComment"
+          @view-request="onViewRequest"
         />
       </div>
 

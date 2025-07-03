@@ -27,4 +27,15 @@ module.exports = defineConfig({
   devServer: {
     port: 8081,
   },
+
+  // Additional configuration for GitHub Pages
+  chainWebpack: (config) => {
+    // Ensure proper asset handling for production
+    if (process.env.NODE_ENV === 'production') {
+      config.optimization.minimizer('terser').tap((args) => {
+        args[0].terserOptions.keep_fnames = false
+        return args
+      })
+    }
+  },
 })

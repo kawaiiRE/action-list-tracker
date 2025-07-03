@@ -1,5 +1,9 @@
 import { defineComponent } from 'vue'
-import { fetchRequests, addComment, type Request } from '@/services/firebase'
+import {
+  getAllRequests,
+  addCommentToRequest,
+  type ActionRequest,
+} from '@/services/firebase'
 import RequestList from '@/components/RequestList/index.vue'
 
 export default defineComponent({
@@ -7,7 +11,7 @@ export default defineComponent({
   components: { RequestList },
   data() {
     return {
-      allRequests: [] as Request[],
+      allRequests: [] as ActionRequest[],
       filterStatus: '' as string,
       filterDept: '' as string,
       filterCreator: '' as string,
@@ -20,7 +24,7 @@ export default defineComponent({
     }
   },
   computed: {
-    filtered(): Request[] {
+    filtered(): ActionRequest[] {
       let filtered = [...this.allRequests]
 
       // Apply filters
@@ -49,8 +53,8 @@ export default defineComponent({
 
       // Apply sorting
       filtered.sort((a, b) => {
-        let aVal = a[this.sortBy as keyof Request]
-        let bVal = b[this.sortBy as keyof Request]
+        let aVal = a[this.sortBy as keyof ActionRequest]
+        let bVal = b[this.sortBy as keyof ActionRequest]
 
         if (this.sortBy === 'createdAt') {
           aVal = a.createdAt
@@ -83,7 +87,7 @@ export default defineComponent({
     async loadRequests() {
       this.isLoading = true
       try {
-        this.allRequests = await fetchRequests()
+        this.allRequests = await getAllRequests()
       } catch (error) {
         console.error('Error loading requests:', error)
         this.$vaToast.init({
@@ -96,7 +100,7 @@ export default defineComponent({
     },
     async onAddComment({ id, text }: { id: string; text: string }) {
       try {
-        await addComment(id, text)
+        await addCommentToRequest(id, text)
         this.$vaToast.init({
           message: 'Comment added successfully',
           color: 'success',

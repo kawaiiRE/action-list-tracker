@@ -1,34 +1,34 @@
 import { defineComponent } from 'vue'
-import { addRequest, type Request } from '@/services/firebase'
+import { createNewRequest, type ActionRequest } from '@/services/firebase'
 import RequestForm from '@/components/RequestForm/index.vue'
 
 export default defineComponent({
   name: 'AddRequestView',
   components: { RequestForm },
   methods: {
-    async onSubmit(payload: Omit<Request, 'createdAt' | 'id'>) {
+    async onSubmit(payload: Omit<ActionRequest, 'createdAt' | 'id'>) {
       try {
-        const requestId = await addRequest({ 
-          ...payload, 
-          createdAt: Date.now() 
+        const requestId = await createNewRequest({
+          ...payload,
+          createdAt: Date.now(),
         })
-        
+
         this.$vaToast.init({
           message: 'Request created successfully!',
-          color: 'success'
+          color: 'success',
         })
-        
+
         this.$router.push('/requests')
       } catch (error) {
         console.error('Error creating request:', error)
         this.$vaToast.init({
           message: 'Error creating request. Please try again.',
-          color: 'danger'
+          color: 'danger',
         })
       }
     },
     goBack() {
       this.$router.back()
-    }
-  }
+    },
+  },
 })

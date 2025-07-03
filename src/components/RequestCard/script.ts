@@ -1,30 +1,38 @@
 import AddComment from '@/components/AddComment/index.vue'
 import { defineComponent, type PropType } from 'vue'
-import { fetchComments, type Request, type Comment } from '@/services/firebase'
+import {
+  getRequestComments,
+  type ActionRequest,
+  type RequestComment,
+} from '@/services/firebase'
 
 export default defineComponent({
   name: 'RequestCard',
   components: { AddComment },
   props: {
-    request: { 
-      type: Object as PropType<Request>, 
-      required: true 
-    }
+    request: {
+      type: Object as PropType<ActionRequest>,
+      required: true,
+    },
   },
   data() {
     return {
-      comments: [] as Comment[],
+      comments: [] as RequestComment[],
       showComments: false,
-      loadingComments: false
+      loadingComments: false,
     }
   },
   computed: {
     statusColor() {
       switch (this.request.status) {
-        case 'Open': return 'warning'
-        case 'In-Progress': return 'primary'
-        case 'Closed': return 'success'
-        default: return 'secondary'
+        case 'Open':
+          return 'warning'
+        case 'In-Progress':
+          return 'primary'
+        case 'Closed':
+          return 'success'
+        default:
+          return 'secondary'
       }
     },
     formattedDate() {
@@ -33,9 +41,9 @@ export default defineComponent({
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       })
-    }
+    },
   },
   methods: {
     async onComment(text: string) {
@@ -54,15 +62,15 @@ export default defineComponent({
     },
     async loadComments() {
       if (!this.request.id) return
-      
+
       this.loadingComments = true
       try {
-        this.comments = await fetchComments(this.request.id)
+        this.comments = await getRequestComments(this.request.id)
       } catch (error) {
         console.error('Error loading comments:', error)
       } finally {
         this.loadingComments = false
       }
-    }
-  }
+    },
+  },
 })

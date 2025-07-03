@@ -2,11 +2,15 @@
   "name": "action-tracker",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "serve": "vue-cli-service serve",
+    "bump-version": "yarn version --patch --no-git-tag-version",
+    "build": "yarn bump-version && vue-cli-service build  --force",
+    "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e",
+    "lint": "vue-cli-service lint",
+    "start": "node server.js",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "firebase": "^11.10.0",
@@ -16,8 +20,11 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/cli-plugin-typescript": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
     "@vue/tsconfig": "^0.7.0",
     "sass": "^1.69.5",
+    "sass-loader": "^16.0.5",
     "typescript": "~5.8.3",
     "vite": "^7.0.0",
     "vue-tsc": "^2.2.10"

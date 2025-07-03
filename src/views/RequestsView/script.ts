@@ -16,62 +16,65 @@ export default defineComponent({
       statuses: ['Open', 'In-Progress', 'Closed'],
       departments: ['Sales', 'Legal', 'Finance', 'Other'],
       sortBy: 'createdAt' as string,
-      sortOrder: 'desc' as string
+      sortOrder: 'desc' as string,
     }
   },
   computed: {
     filtered(): Request[] {
       let filtered = [...this.allRequests]
-      
+
       // Apply filters
       if (this.filterStatus) {
-        filtered = filtered.filter(r => r.status === this.filterStatus)
+        filtered = filtered.filter((r) => r.status === this.filterStatus)
       }
       if (this.filterDept) {
-        filtered = filtered.filter(r => r.department === this.filterDept)
+        filtered = filtered.filter((r) => r.department === this.filterDept)
       }
       if (this.filterCreator) {
-        filtered = filtered.filter(r => 
-          r.creator.toLowerCase().includes(this.filterCreator.toLowerCase())
+        filtered = filtered.filter((r) =>
+          r.creator.toLowerCase().includes(this.filterCreator.toLowerCase()),
         )
       }
-      
+
       // Apply search
       if (this.search) {
         const searchTerm = this.search.toLowerCase()
-        filtered = filtered.filter(r =>
-          r.title.toLowerCase().includes(searchTerm) ||
-          r.details.toLowerCase().includes(searchTerm) ||
-          r.creator.toLowerCase().includes(searchTerm)
+        filtered = filtered.filter(
+          (r) =>
+            r.title.toLowerCase().includes(searchTerm) ||
+            r.details.toLowerCase().includes(searchTerm) ||
+            r.creator.toLowerCase().includes(searchTerm),
         )
       }
-      
+
       // Apply sorting
       filtered.sort((a, b) => {
         let aVal = a[this.sortBy as keyof Request]
         let bVal = b[this.sortBy as keyof Request]
-        
+
         if (this.sortBy === 'createdAt') {
           aVal = a.createdAt
           bVal = b.createdAt
         }
-        
+
         if (typeof aVal === 'string' && typeof bVal === 'string') {
           aVal = aVal.toLowerCase()
           bVal = bVal.toLowerCase()
         }
-        
-        if (aVal < bVal) return this.sortOrder === 'asc' ? -1 : 1
-        if (aVal > bVal) return this.sortOrder === 'asc' ? 1 : -1
+
+        if (aVal != null && bVal != null) {
+          if (aVal < bVal) return this.sortOrder === 'asc' ? -1 : 1
+          if (aVal > bVal) return this.sortOrder === 'asc' ? 1 : -1
+        }
         return 0
       })
-      
+
       return filtered
     },
     uniqueCreators(): string[] {
-      const creators = this.allRequests.map(r => r.creator)
+      const creators = this.allRequests.map((r) => r.creator)
       return [...new Set(creators)].sort()
-    }
+    },
   },
   async created() {
     await this.loadRequests()
@@ -85,7 +88,7 @@ export default defineComponent({
         console.error('Error loading requests:', error)
         this.$vaToast.init({
           message: 'Error loading requests',
-          color: 'danger'
+          color: 'danger',
         })
       } finally {
         this.isLoading = false
@@ -96,7 +99,7 @@ export default defineComponent({
         await addComment(id, text)
         this.$vaToast.init({
           message: 'Comment added successfully',
-          color: 'success'
+          color: 'success',
         })
         // Refresh the requests to show new comment
         await this.loadRequests()
@@ -104,7 +107,7 @@ export default defineComponent({
         console.error('Error adding comment:', error)
         this.$vaToast.init({
           message: 'Error adding comment',
-          color: 'danger'
+          color: 'danger',
         })
       }
     },
@@ -116,6 +119,6 @@ export default defineComponent({
     },
     goToAddRequest() {
       this.$router.push('/requests/add')
-    }
-  }
+    },
+  },
 })

@@ -1,11 +1,13 @@
 {
   "name": "action-tracker",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.2",
   "scripts": {
     "serve": "vue-cli-service serve",
     "bump-version": "yarn version --patch --no-git-tag-version",
     "build": "yarn bump-version && vue-cli-service build  --force",
+    "build:gh-pages": "vue-cli-service build --mode production",
+    "deploy": "npm run build:gh-pages && gh-pages -d dist",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
@@ -23,6 +25,7 @@
     "@vue/cli-plugin-typescript": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
     "@vue/tsconfig": "^0.7.0",
+    "gh-pages": "^6.1.1",
     "sass": "^1.69.5",
     "sass-loader": "^16.0.5",
     "typescript": "~5.8.3",

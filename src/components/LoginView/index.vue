@@ -17,7 +17,7 @@
         <h1>AZAD Properties : BAS - Project Integration</h1>
       </div>
       <va-card class="login-card">
-        <va-card-title class="text-center">
+        <va-card-title class="login-card-title">
           <p class="subtitle">Sign in to your account</p>
         </va-card-title>
 
@@ -26,7 +26,7 @@
           <va-alert
             v-if="sessionExpired"
             color="warning"
-            class="mb-4"
+            class="session-expired-alert"
             border="left"
             border-color="warning"
           >

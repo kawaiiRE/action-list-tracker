@@ -9,7 +9,7 @@
   >
     <div class="user-management">
       <!-- Header with Add User button -->
-      <div class="d-flex justify-between align-center mb-4">
+      <div class="management-header">
         <h4>System Users</h4>
         <va-button @click="showAddUserForm = true" color="primary" icon="add">
           Add User
@@ -17,72 +17,72 @@
       </div>
 
       <!-- Add User Form -->
-      <va-card v-if="showAddUserForm" class="mb-4">
+      <va-card v-if="showAddUserForm" class="add-user-form">
         <va-card-title>Add New User</va-card-title>
         <va-card-content>
           <form @submit.prevent="handleAddUser">
-            <div class="row">
-              <div class="flex md6">
+            <div class="form-row">
+              <div class="form-field">
                 <va-input
                   v-model="newUser.email"
                   label="Email"
                   type="email"
                   :rules="[required, email]"
-                  class="mb-3"
+                  class="field-input"
                 />
               </div>
-              <div class="flex md6">
+              <div class="form-field">
                 <va-input
                   v-model="newUser.firstName"
                   label="First Name"
                   :rules="[required]"
-                  class="mb-3"
+                  class="field-input"
                 />
               </div>
             </div>
-            <div class="row">
-              <div class="flex md6">
+            <div class="form-row">
+              <div class="form-field">
                 <va-input
                   v-model="newUser.lastName"
                   label="Last Name"
                   :rules="[required]"
-                  class="mb-3"
+                  class="field-input"
                 />
               </div>
-              <div class="flex md6">
+              <div class="form-field">
                 <va-select
                   v-model="newUser.department"
                   label="Department"
                   :options="departments"
                   :rules="[required]"
-                  class="mb-3"
+                  class="field-input"
                 />
               </div>
             </div>
-            <div class="row">
-              <div class="flex md6">
+            <div class="form-row">
+              <div class="form-field">
                 <va-input
                   v-model="newUser.title"
                   label="Job Title"
                   :rules="[required]"
-                  class="mb-3"
+                  class="field-input"
                 />
               </div>
-              <div class="flex md6">
+              <div class="form-field">
                 <va-select
                   v-model="newUser.role"
                   :options="roleOptions"
                   label="Role"
                   :rules="[requiredSelect]"
-                  class="mb-3"
+                  class="field-input"
                 />
               </div>
             </div>
-            <div class="d-flex justify-end">
+            <div class="form-actions">
               <va-button
                 @click="showAddUserForm = false"
                 color="secondary"
-                class="mr-2"
+                class="cancel-button"
               >
                 Cancel
               </va-button>
@@ -118,7 +118,7 @@
         </template>
 
         <template #cell(actions)="{ rowData }">
-          <div class="d-flex gap-2">
+          <div class="table-actions">
             <va-select
               v-model="rowData.role"
               :options="roleOptions"
@@ -145,16 +145,16 @@
         size="small"
         :hide-default-actions="true"
       >
-        <div class="pa-4">
+        <div class="confirmation-dialog">
           <p>
             Are you sure you want to delete this user? This action cannot be
             undone.
           </p>
-          <div class="d-flex justify-end mt-4">
+          <div class="dialog-actions">
             <va-button
               @click="showDeleteDialog = false"
               color="secondary"
-              class="mr-2"
+              class="cancel-button"
             >
               Cancel
             </va-button>

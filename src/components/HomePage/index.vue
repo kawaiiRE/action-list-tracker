@@ -3,7 +3,7 @@
   <div v-if="authLoading" class="loading-container">
     <div class="loading-content">
       <va-icon name="autorenew" spin size="large" color="primary" />
-      <p class="mt-3">Loading...</p>
+      <p class="loading-text">Loading...</p>
     </div>
   </div>
 
@@ -16,7 +16,7 @@
 
   <!-- Main app content when authenticated -->
   <div class="body" v-else>
-    <va-navbar color="primary" class="mb-4">
+    <va-navbar color="primary" class="main-navbar">
       <template #left>
         <va-navbar-item>
           <img
@@ -28,7 +28,7 @@
         </va-navbar-item>
       </template>
       <template #right>
-        <div class="d-flex align-center">
+        <div class="navbar-right">
           <UserAvatar
             :user-profile="currentUserProfile"
             @edit-profile="openProfileModal"
@@ -41,7 +41,7 @@
     <va-container class="main-content">
       <!-- Home Page Selection Boxes -->
       <div v-if="currentView === 'home'" class="home-page">
-        <h2 class="mb-4">
+        <h2 class="dashboard-title">
           AZAD Properties : BAS - Project Integration Dashboard
         </h2>
         <div class="action-boxes">
@@ -53,24 +53,29 @@
             :class="{ disabled: !box.enabled }"
             hover
           >
-            <va-card-content class="text-center">
+            <va-card-content class="action-box-content">
               <va-icon
                 :name="box.icon"
                 size="3rem"
                 :color="box.enabled ? box.color : 'secondary'"
-                class="mb-3"
+                class="action-icon"
               />
-              <h4 class="mb-2">{{ box.title }}</h4>
-              <p class="text-muted">{{ box.description }}</p>
+              <h4 class="action-title">{{ box.title }}</h4>
+              <p class="action-description">{{ box.description }}</p>
               <va-button
                 v-if="box.enabled"
                 :color="box.color"
                 size="small"
-                class="mt-2"
+                class="action-button"
               >
                 {{ box.buttonText }}
               </va-button>
-              <va-chip v-else color="secondary" size="small" class="mt-2">
+              <va-chip
+                v-else
+                color="secondary"
+                size="small"
+                class="no-access-chip"
+              >
                 No Access
               </va-chip>
             </va-card-content>
@@ -80,16 +85,16 @@
 
       <!-- Requests View -->
       <div v-if="currentView === 'requests'">
-        <div class="d-flex align-center mb-4">
+        <div class="requests-header">
           <va-button
             @click="goHome"
             icon="arrow_back"
             preset="plain"
-            class="mr-3"
+            class="back-button"
           >
             Back to Home
           </va-button>
-          <h3 class="flex-grow-1">Action Requests</h3>
+          <h3 class="requests-title">Action Requests</h3>
           <va-button
             @click="openExportModal"
             icon="download"
@@ -99,7 +104,7 @@
             Export Excel
           </va-button>
         </div>
-        <div class="mb-4">
+        <div class="filters-container">
           <!-- Search Bar -->
           <va-input
             v-model="filters.search"
@@ -107,23 +112,23 @@
             placeholder="Search by title, details, sender, or department..."
             prepend-icon="search"
             clearable
-            class="search-input mb-3"
+            class="search-input"
           />
 
           <!-- Main Filters -->
           <div class="filters-section">
-            <div class="main-filters mb-3">
+            <div class="main-filters">
               <va-select
                 v-model="filters.status"
                 :options="['All', 'Open', 'In-Progress', 'Closed']"
                 label="Status"
-                class="mr-3 filter-select"
+                class="filter-select"
               />
               <va-select
                 v-model="filters.senderDepartment"
                 :options="senderDepartmentOptions"
                 label="Sent From"
-                class="mr-3 filter-select"
+                class="filter-select"
               />
               <va-select
                 v-model="filters.receiverDepartment"
@@ -146,11 +151,11 @@
                 </va-button>
               </template>
 
-              <div class="advanced-filters mt-3">
+              <div class="advanced-filters">
                 <va-date-input
                   v-model="filters.dateFrom"
                   label="From Date"
-                  class="mr-3 filter-select"
+                  class="filter-select"
                   clearable
                 />
                 <va-date-input
@@ -179,12 +184,12 @@
 
       <!-- Add Request View -->
       <div v-if="currentView === 'add-request'">
-        <div class="d-flex align-center mb-4">
+        <div class="add-request-header">
           <va-button
             @click="goHome"
             icon="arrow_back"
             preset="plain"
-            class="mr-3"
+            class="back-button"
           >
             Back to Home
           </va-button>
@@ -201,13 +206,13 @@
         hide-default-actions
       >
         <template #header>
-          <div class="d-flex align-center pb-3">
-            <h4 class="flex-grow-1">Request Details</h4>
+          <div class="modal-header">
+            <h4 class="modal-title">Request Details</h4>
             <va-button
               @click="showModal = false"
               icon="close"
               preset="plain"
-              class="mr-3"
+              class="close-button"
             />
           </div>
         </template>
@@ -215,36 +220,36 @@
           <va-card>
             <va-card-title>{{ selectedRequest.title }}</va-card-title>
             <va-card-content>
-              <div class="mb-3">
+              <div class="request-field">
                 <strong>Status:</strong>
                 <va-badge
                   :color="getStatusColor(selectedRequest.status)"
                   :text="selectedRequest.status"
-                  class="ml-2"
+                  class="status-badge"
                 />
               </div>
-              <div class="mb-3">
+              <div class="request-field">
                 <strong>Sender:</strong> {{ selectedRequest.senderName }}
               </div>
-              <div class="mb-3">
+              <div class="request-field">
                 <strong>Sender Department:</strong>
                 {{ selectedRequest.senderDepartment }}
               </div>
-              <div class="mb-3">
+              <div class="request-field">
                 <strong>Receiver Department:</strong>
                 {{ selectedRequest.receiverDepartment }}
               </div>
-              <div class="mb-3">
+              <div class="request-field">
                 <strong>Created:</strong>
                 {{ formatDate(selectedRequest.createdAt) }}
               </div>
-              <div class="mb-3">
+              <div class="request-field">
                 <strong>Description:</strong>
                 <p>{{ selectedRequest.details }}</p>
               </div>
 
               <!-- Request Actions -->
-              <div class="mb-4" v-if="!isViewOnly">
+              <div class="request-actions" v-if="!isViewOnly">
                 <va-button
                   v-if="
                     canDelete ||
@@ -261,22 +266,20 @@
               </div>
 
               <!-- Comments Section -->
-              <div class="mt-4">
+              <div class="comments-section">
                 <h4>Comments</h4>
                 <div v-if="selectedRequestComments.length > 0">
                   <div
                     v-for="comment in selectedRequestComments"
                     :key="comment.id"
-                    class="comment mb-3"
+                    class="comment-item"
                   >
                     <va-card>
                       <va-card-content>
-                        <div
-                          class="comment-meta mb-2 d-flex justify-between align-center"
-                        >
+                        <div class="comment-meta">
                           <div>
                             <strong>{{ comment.authorName }}</strong>
-                            <span class="text-muted ml-2">{{
+                            <span class="comment-date">{{
                               formatDate(comment.createdAt)
                             }}</span>
                           </div>
@@ -300,12 +303,12 @@
                   </div>
                 </div>
                 <div v-else>
-                  <p class="text-muted">No comments yet.</p>
+                  <p class="no-comments">No comments yet.</p>
                 </div>
 
                 <!-- Add Comment -->
                 <AddComment v-if="canComment" @submit="handleModalComment" />
-                <div v-else-if="isViewOnly" class="text-muted">
+                <div v-else-if="isViewOnly" class="view-only-message">
                   <p>
                     <em>You have view-only access and cannot add comments.</em>
                   </p>
@@ -323,16 +326,16 @@
         size="small"
         :hideDefaultActions="true"
       >
-        <div class="pa-4">
+        <div class="confirmation-dialog">
           <p>
             Are you sure you want to delete this request? This action cannot be
             undone.
           </p>
-          <div class="d-flex justify-end mt-4">
+          <div class="dialog-actions">
             <va-button
               @click="showDeleteRequestDialog = false"
               color="secondary"
-              class="mr-2"
+              class="cancel-button"
             >
               Cancel
             </va-button>
@@ -354,16 +357,16 @@
         size="small"
         :hideDefaultActions="true"
       >
-        <div class="pa-4">
+        <div class="confirmation-dialog">
           <p>
             Are you sure you want to delete this comment? This action cannot be
             undone.
           </p>
-          <div class="d-flex justify-end mt-4">
+          <div class="dialog-actions">
             <va-button
               @click="showDeleteCommentDialog = false"
               color="secondary"
-              class="mr-2"
+              class="cancel-button"
             >
               Cancel
             </va-button>
@@ -386,7 +389,7 @@
         max-width="600px"
       >
         <div class="export-modal-content">
-          <p class="mb-4">
+          <p class="export-description">
             Select the fields you want to include in the Excel export:
           </p>
 
@@ -396,20 +399,20 @@
               :key="field.key"
               v-model="field.selected"
               :label="field.label"
-              class="mb-2"
+              class="export-field-checkbox"
             />
           </div>
 
-          <div class="export-options mt-4">
+          <div class="export-options">
             <va-checkbox
               v-model="includeComments"
               label="Include Comments"
-              class="mb-2"
+              class="export-option-checkbox"
             />
             <va-checkbox
               v-model="applyCurrentFilters"
               label="Apply Current Filters"
-              class="mb-2"
+              class="export-option-checkbox"
             />
           </div>
         </div>
@@ -418,7 +421,7 @@
           <va-button
             @click="showExportModal = false"
             preset="secondary"
-            class="mr-3"
+            class="cancel-button"
           >
             Cancel
           </va-button>

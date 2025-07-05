@@ -3,6 +3,18 @@
   margin: 0 auto;
 }
 
+.sender-preview-card {
+  margin-bottom: 1.5rem;
+
+  .preview-title {
+    margin-bottom: 0.5rem;
+  }
+
+  .preview-item {
+    margin-bottom: 0.25rem;
+  }
+}
+
 .request-form {
   .form-grid {
     display: grid;
@@ -11,8 +23,14 @@
     margin-bottom: 1rem;
   }
 
-  .full-width {
+  .form-input {
     margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  .form-textarea {
+    margin-bottom: 1rem;
+    width: 100%;
   }
 
   .status-select {
@@ -25,7 +43,7 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  
+
   .va-button {
     min-width: 120px;
   }
@@ -37,7 +55,7 @@
       grid-template-columns: 1fr;
     }
   }
-  
+
   .form-actions {
     flex-direction: column;
   }

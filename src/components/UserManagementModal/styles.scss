@@ -1,16 +1,74 @@
 .user-management {
-  .va-data-table {
-    .va-select {
-      min-width: 120px;
+  .management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h4 {
+      margin: 0;
     }
+  }
+
+  .add-user-form {
+    margin-bottom: 2rem;
+    border: 1px solid var(--va-background-border);
+  }
+
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-field {
+    flex: 1;
+  }
+
+  .field-input {
+    width: 100%;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .cancel-button {
+    margin-right: 0.5rem;
+  }
+
+  .table-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
   }
 
   .role-select {
     width: 120px;
   }
 
-  .gap-2 {
+  .confirmation-dialog {
+    padding: 1rem;
+
+    p {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
     gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .va-data-table {
+    .va-select {
+      min-width: 120px;
+    }
   }
 
   .va-card {

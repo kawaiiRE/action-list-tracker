@@ -39,7 +39,7 @@
               color="primary"
               size="small"
               icon="edit"
-              class="mb-2"
+              class="edit-profile-button"
               block
             >
               Edit Profile

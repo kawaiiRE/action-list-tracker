@@ -7,7 +7,7 @@
   >
     <form @submit.prevent="handleSubmit">
       <div class="profile-form">
-        <div class="row">
+        <div class="form-row">
           <va-input
             v-model="form.firstName"
             label="First Name"
@@ -22,7 +22,7 @@
             class="profile-form-input"
           />
         </div>
-        <div class="row">
+        <div class="form-row">
           <va-select
             v-model="form.department"
             label="Department"
@@ -39,14 +39,19 @@
           />
         </div>
 
-        <va-input v-model="form.email" label="Email" disabled class="mb-3" />
+        <va-input
+          v-model="form.email"
+          label="Email"
+          disabled
+          class="email-input"
+        />
 
         <div class="form-actions">
           <va-button
             type="button"
             @click="$emit('close')"
             color="secondary"
-            class="mr-3"
+            class="cancel-button"
           >
             Cancel
           </va-button>

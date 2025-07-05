@@ -41,16 +41,16 @@
         />
 
         <div class="form-actions">
-          <va-button 
-            type="button" 
+          <va-button
+            type="button"
             @click="resetForm"
             outline
             :disabled="isSubmitting"
           >
             Reset Form
           </va-button>
-          
-          <va-button 
+
+          <va-button
             type="submit"
             color="primary"
             :disabled="!isValid || isSubmitting"

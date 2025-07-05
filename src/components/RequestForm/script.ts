@@ -9,24 +9,22 @@ export default defineComponent({
         title: '',
         details: '',
         status: 'Open', // Default to Open
-        department: ''
+        department: '',
       },
       statuses: ['Open', 'In-Progress', 'Closed'],
       departments: DEPARTMENTS,
-      isSubmitting: false
+      isSubmitting: false,
     }
   },
   computed: {
     isValid() {
-      return this.form.title.trim() && 
-             this.form.status && 
-             this.form.department
-    }
+      return this.form.title.trim() && this.form.status && this.form.department
+    },
   },
   methods: {
     async onSubmit() {
       if (!this.isValid || this.isSubmitting) return
-      
+
       this.isSubmitting = true
       try {
         this.$emit('submit', { ...this.form })
@@ -39,8 +37,8 @@ export default defineComponent({
         title: '',
         details: '',
         status: 'Open',
-        department: ''
+        department: '',
       }
-    }
-  }
+    },
+  },
 })

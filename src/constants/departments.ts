@@ -1,7 +1,7 @@
 export const DEPARTMENTS = [
   'ASSET Department',
   'Projects dep',
-  'Business Development dep', 
+  'Business Development dep',
   'Finance dep',
   'Leasing Dep',
   'COO office',
@@ -15,7 +15,7 @@ export const DEPARTMENTS = [
   'Contracts Dep',
   'Marketing Dep',
   'Strategic Dep',
-  'Legal Dep'
+  'Legal Dep',
 ]
 
 export const DEPARTMENT_OPTIONS = ['All', ...DEPARTMENTS]

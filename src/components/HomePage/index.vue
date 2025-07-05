@@ -36,7 +36,9 @@
     <va-container class="main-content">
       <!-- Home Page Selection Boxes -->
       <div v-if="currentView === 'home'" class="home-page">
-        <h2 class="mb-4">AZAD Properties : BAS - Project Integration Dashboard</h2>
+        <h2 class="mb-4">
+          AZAD Properties : BAS - Project Integration Dashboard
+        </h2>
         <div class="action-boxes">
           <va-card
             v-for="(box, key) in availableActions"

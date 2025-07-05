@@ -153,12 +153,12 @@ export default defineComponent({
         },
       }
     },
-    
+
     // Export computed properties
     hasSelectedFields(): boolean {
-      return this.exportFields.some(field => field.selected)
+      return this.exportFields.some((field) => field.selected)
     },
-    
+
     requestsToExport(): ActionRequest[] {
       return this.applyCurrentFilters ? this.filteredRequests : this.requests
     },
@@ -293,7 +293,7 @@ export default defineComponent({
 
         // Reload requests to get fresh data
         await this.reloadRequests()
-        
+
         this.showModal = false
       } catch (error) {
         console.error('Error deleting request:', error)
@@ -375,11 +375,11 @@ export default defineComponent({
       }
 
       this.exportLoading = true
-      
+
       try {
         // Get the requests to export
         const requestsData = this.requestsToExport
-        
+
         if (requestsData.length === 0) {
           this.$vaToast.init({
             message: 'No data to export',
@@ -389,63 +389,71 @@ export default defineComponent({
         }
 
         // Get selected field keys
-        const selectedFields = this.exportFields.filter(field => field.selected)
-        
+        const selectedFields = this.exportFields.filter(
+          (field) => field.selected,
+        )
+
         // Create CSV header
-        const headers = selectedFields.map(field => field.label)
+        const headers = selectedFields.map((field) => field.label)
         if (this.includeComments) {
           headers.push('Comments')
         }
-        
+
         // Create CSV rows
         const rows = []
-        
+
         for (const request of requestsData) {
-          const row = selectedFields.map(field => {
+          const row = selectedFields.map((field) => {
             let value = request[field.key as keyof ActionRequest]
-            
+
             // Format specific fields
             if (field.key === 'createdAt' || field.key === 'updatedAt') {
               if (value && typeof value === 'number') {
                 value = new Date(value).toLocaleString()
               }
             }
-            
+
             // Escape and format value for CSV
             return this.formatCSVValue(value)
           })
-          
+
           // Add comments if requested
           if (this.includeComments) {
             const comments = request.comments || []
-            const commentsText = comments.map(comment => 
-              `${comment.authorName} (${new Date(comment.createdAt).toLocaleString()}): ${comment.text}`
-            ).join('; ')
+            const commentsText = comments
+              .map(
+                (comment) =>
+                  `${comment.authorName} (${new Date(
+                    comment.createdAt,
+                  ).toLocaleString()}): ${comment.text}`,
+              )
+              .join('; ')
             row.push(this.formatCSVValue(commentsText))
           }
-          
+
           rows.push(row.join(','))
         }
-        
+
         // Create CSV content
         const csvContent = [headers.join(','), ...rows].join('\n')
-        
+
         // Create and download file
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.download = `action-requests-${new Date().toISOString().split('T')[0]}.csv`
+        link.download = `action-requests-${
+          new Date().toISOString().split('T')[0]
+        }.csv`
         link.click()
         URL.revokeObjectURL(url)
-        
+
         this.$vaToast.init({
           message: 'CSV exported successfully',
           color: 'success',
         })
-        
+
         this.showExportModal = false
-        
       } catch (error) {
         console.error('Error exporting CSV:', error)
         this.$vaToast.init({
@@ -461,15 +469,19 @@ export default defineComponent({
       if (value === null || value === undefined) {
         return ''
       }
-      
+
       const stringValue = String(value)
-      
+
       // If the value contains commas, quotes, or newlines, wrap it in quotes
-      if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+      if (
+        stringValue.includes(',') ||
+        stringValue.includes('"') ||
+        stringValue.includes('\n')
+      ) {
         // Escape quotes by doubling them
         return `"${stringValue.replace(/"/g, '""')}"`
       }
-      
+
       return stringValue
     },
 

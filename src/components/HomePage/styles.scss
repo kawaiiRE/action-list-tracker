@@ -151,3 +151,22 @@
     margin: 0;
   }
 }
+
+// Export modal styles
+.export-modal-content {
+  .export-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .export-options {
+    border-top: 1px solid var(--va-background-border);
+    padding-top: 1rem;
+  }
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}

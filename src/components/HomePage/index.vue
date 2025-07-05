@@ -82,7 +82,15 @@
           >
             Back to Home
           </va-button>
-          <h3>Action Requests</h3>
+          <h3 class="flex-grow-1">Action Requests</h3>
+          <va-button
+            @click="openExportModal"
+            icon="download"
+            color="primary"
+            preset="secondary"
+          >
+            Export CSV
+          </va-button>
         </div>
         <div class="mb-4">
           <div class="filters mb-3">
@@ -292,6 +300,61 @@
             </va-button>
           </div>
         </div>
+      </va-modal>
+
+      <!-- Export CSV Modal -->
+      <va-modal
+        v-model="showExportModal"
+        title="Export Requests to CSV"
+        size="medium"
+        max-width="600px"
+      >
+        <div class="export-modal-content">
+          <p class="mb-4">
+            Select the fields you want to include in the CSV export:
+          </p>
+
+          <div class="export-fields">
+            <va-checkbox
+              v-for="field in exportFields"
+              :key="field.key"
+              v-model="field.selected"
+              :label="field.label"
+              class="mb-2"
+            />
+          </div>
+
+          <div class="export-options mt-4">
+            <va-checkbox
+              v-model="includeComments"
+              label="Include Comments"
+              class="mb-2"
+            />
+            <va-checkbox
+              v-model="applyCurrentFilters"
+              label="Apply Current Filters"
+              class="mb-2"
+            />
+          </div>
+        </div>
+
+        <template #footer>
+          <va-button
+            @click="showExportModal = false"
+            preset="secondary"
+            class="mr-3"
+          >
+            Cancel
+          </va-button>
+          <va-button
+            @click="exportToCSV"
+            color="primary"
+            :loading="exportLoading"
+            :disabled="!hasSelectedFields"
+          >
+            Export CSV
+          </va-button>
+        </template>
       </va-modal>
     </va-container>
 

@@ -49,6 +49,21 @@ export default defineComponent({
       commentIdToDelete: null as string | null,
       showProfileModal: false,
       showUserManagementModal: false,
+      // Export modal state
+      showExportModal: false,
+      exportLoading: false,
+      includeComments: false,
+      applyCurrentFilters: true,
+      exportFields: [
+        { key: 'id', label: 'ID', selected: true },
+        { key: 'title', label: 'Title', selected: true },
+        { key: 'details', label: 'Details', selected: true },
+        { key: 'status', label: 'Status', selected: true },
+        { key: 'department', label: 'Department', selected: true },
+        { key: 'creatorName', label: 'Creator', selected: true },
+        { key: 'createdAt', label: 'Created Date', selected: true },
+        { key: 'updatedAt', label: 'Updated Date', selected: false },
+      ],
     }
   },
   computed: {
@@ -131,6 +146,15 @@ export default defineComponent({
           view: 'user-management',
         },
       }
+    },
+    
+    // Export computed properties
+    hasSelectedFields(): boolean {
+      return this.exportFields.some(field => field.selected)
+    },
+    
+    requestsToExport(): ActionRequest[] {
+      return this.applyCurrentFilters ? this.filteredRequests : this.requests
     },
   },
   async created() {
@@ -261,11 +285,9 @@ export default defineComponent({
       try {
         await deleteRequestFromFirebase(this.selectedRequest.id)
 
-        // Remove from local state
-        const requestId = this.selectedRequest.id
-        this.requests = this.requests.filter(
-          (request) => request.id !== requestId,
-        )
+        // Reload requests to get fresh data
+        await this.reloadRequests()
+        
         this.showModal = false
       } catch (error) {
         console.error('Error deleting request:', error)
@@ -336,8 +358,126 @@ export default defineComponent({
       }
     },
 
+    // Export methods
+    openExportModal() {
+      this.showExportModal = true
+    },
+
+    async exportToCSV() {
+      if (!this.hasSelectedFields) {
+        return
+      }
+
+      this.exportLoading = true
+      
+      try {
+        // Get the requests to export
+        const requestsData = this.requestsToExport
+        
+        if (requestsData.length === 0) {
+          this.$vaToast.init({
+            message: 'No data to export',
+            color: 'warning',
+          })
+          return
+        }
+
+        // Get selected field keys
+        const selectedFields = this.exportFields.filter(field => field.selected)
+        
+        // Create CSV header
+        const headers = selectedFields.map(field => field.label)
+        if (this.includeComments) {
+          headers.push('Comments')
+        }
+        
+        // Create CSV rows
+        const rows = []
+        
+        for (const request of requestsData) {
+          const row = selectedFields.map(field => {
+            let value = request[field.key as keyof ActionRequest]
+            
+            // Format specific fields
+            if (field.key === 'createdAt' || field.key === 'updatedAt') {
+              if (value && typeof value === 'number') {
+                value = new Date(value).toLocaleString()
+              }
+            }
+            
+            // Escape and format value for CSV
+            return this.formatCSVValue(value)
+          })
+          
+          // Add comments if requested
+          if (this.includeComments) {
+            const comments = request.comments || []
+            const commentsText = comments.map(comment => 
+              `${comment.authorName} (${new Date(comment.createdAt).toLocaleString()}): ${comment.text}`
+            ).join('; ')
+            row.push(this.formatCSVValue(commentsText))
+          }
+          
+          rows.push(row.join(','))
+        }
+        
+        // Create CSV content
+        const csvContent = [headers.join(','), ...rows].join('\n')
+        
+        // Create and download file
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `action-requests-${new Date().toISOString().split('T')[0]}.csv`
+        link.click()
+        URL.revokeObjectURL(url)
+        
+        this.$vaToast.init({
+          message: 'CSV exported successfully',
+          color: 'success',
+        })
+        
+        this.showExportModal = false
+        
+      } catch (error) {
+        console.error('Error exporting CSV:', error)
+        this.$vaToast.init({
+          message: 'Error exporting CSV',
+          color: 'danger',
+        })
+      } finally {
+        this.exportLoading = false
+      }
+    },
+
+    formatCSVValue(value: any): string {
+      if (value === null || value === undefined) {
+        return ''
+      }
+      
+      const stringValue = String(value)
+      
+      // If the value contains commas, quotes, or newlines, wrap it in quotes
+      if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+        // Escape quotes by doubling them
+        return `"${stringValue.replace(/"/g, '""')}"`
+      }
+      
+      return stringValue
+    },
+
     goHome() {
       this.currentView = 'home'
+    },
+
+    // Reload requests data
+    async reloadRequests() {
+      try {
+        this.requests = await getAllRequests()
+      } catch (error) {
+        console.error('Error reloading requests:', error)
+      }
     },
   },
 })

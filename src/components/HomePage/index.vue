@@ -91,23 +91,71 @@
             color="primary"
             preset="secondary"
           >
-            Export CSV
+            Export Excel
           </va-button>
         </div>
         <div class="mb-4">
-          <div class="filters mb-3">
-            <va-select
-              v-model="filters.status"
-              :options="['All', 'Open', 'In-Progress', 'Closed']"
-              label="Filter by Status"
-              class="mr-3 filter-select"
-            />
-            <va-select
-              v-model="filters.department"
-              :options="departmentOptions"
-              label="Filter by Department"
-              class="filter-select"
-            />
+          <!-- Search Bar -->
+          <va-input
+            v-model="filters.search"
+            label="Search Requests"
+            placeholder="Search by title, details, sender, or department..."
+            prepend-icon="search"
+            clearable
+            class="search-input mb-3"
+          />
+          
+          <!-- Main Filters -->
+          <div class="filters-section">
+            <div class="main-filters mb-3">
+              <va-select
+                v-model="filters.status"
+                :options="['All', 'Open', 'In-Progress', 'Closed']"
+                label="Status"
+                class="mr-3 filter-select"
+              />
+              <va-select
+                v-model="filters.senderDepartment"
+                :options="senderDepartmentOptions"
+                label="Sent From"
+                class="mr-3 filter-select"
+              />
+              <va-select
+                v-model="filters.receiverDepartment"
+                :options="receiverDepartmentOptions"
+                label="Sent To"
+                class="filter-select"
+              />
+            </div>
+            
+            <!-- Advanced Filters (collapsed by default) -->
+            <va-collapse v-model="showAdvancedFilters">
+              <template #header>
+                <va-button
+                  @click="showAdvancedFilters = !showAdvancedFilters"
+                  preset="plain"
+                  icon="tune"
+                  size="small"
+                >
+                  {{ showAdvancedFilters ? 'Hide' : 'Show' }} Advanced Filters
+                </va-button>
+              </template>
+              
+              <div class="advanced-filters mt-3">
+                <va-date-input
+                  v-model="filters.dateFrom"
+                  label="From Date"
+                  class="mr-3 filter-select"
+                  clearable
+                />
+                <va-date-input
+                  v-model="filters.dateTo"
+                  label="To Date"
+                  class="filter-select"
+                  clearable
+                />
+              </div>
+            </va-collapse>
           </div>
         </div>
 
@@ -155,10 +203,13 @@
                 />
               </div>
               <div class="mb-3">
-                <strong>Department:</strong> {{ selectedRequest.department }}
+                <strong>Sender:</strong> {{ selectedRequest.senderName }}
               </div>
               <div class="mb-3">
-                <strong>Creator:</strong> {{ selectedRequest.creatorName }}
+                <strong>Sender Department:</strong> {{ selectedRequest.senderDepartment }}
+              </div>
+              <div class="mb-3">
+                <strong>Receiver Department:</strong> {{ selectedRequest.receiverDepartment }}
               </div>
               <div class="mb-3">
                 <strong>Created:</strong>
@@ -175,7 +226,7 @@
                   v-if="
                     canDelete ||
                     canDeleteAll ||
-                    selectedRequest.creatorId === currentUserProfile?.uid
+                    selectedRequest.senderId === currentUserProfile?.uid
                   "
                   @click="confirmDeleteRequest"
                   color="danger"
@@ -304,16 +355,16 @@
         </div>
       </va-modal>
 
-      <!-- Export CSV Modal -->
+      <!-- Export Excel Modal -->
       <va-modal
         v-model="showExportModal"
-        title="Export Requests to CSV"
+        title="Export Requests to Excel"
         size="medium"
         max-width="600px"
       >
         <div class="export-modal-content">
           <p class="mb-4">
-            Select the fields you want to include in the CSV export:
+            Select the fields you want to include in the Excel export:
           </p>
 
           <div class="export-fields">
@@ -349,12 +400,12 @@
             Cancel
           </va-button>
           <va-button
-            @click="exportToCSV"
+            @click="exportToExcel"
             color="primary"
             :loading="exportLoading"
             :disabled="!hasSelectedFields"
           >
-            Export CSV
+            Export Excel
           </va-button>
         </template>
       </va-modal>

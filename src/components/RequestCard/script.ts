@@ -68,7 +68,7 @@ export default defineComponent({
     canDeleteThis() {
       return (
         this.canDeleteAll ||
-        (this.canDelete && this.request.creatorId === this.currentUserId)
+        (this.canDelete && this.request.senderId === this.currentUserId)
       )
     },
     canCommentThis() {

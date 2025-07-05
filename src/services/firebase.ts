@@ -69,12 +69,16 @@ export interface UserProfile {
 
 export interface ActionRequest {
   id?: string
-  creatorId: string
-  creatorName: string
+  // Sender information (who is sending the request)
+  senderId: string
+  senderName: string
+  senderDepartment: string
+  // Receiver information (which department should handle this)
+  receiverDepartment: string
+  // Request details
   title: string
   details: string
   status: string
-  department: string
   createdAt: number
   updatedAt?: number
   comments?: RequestComment[]
@@ -393,7 +397,7 @@ export async function getAllRequests(filters?: {
         )
       if (filters.department)
         requestList = requestList.filter(
-          (request) => request.department === filters.department,
+          (request) => request.receiverDepartment === filters.department,
         )
       if (filters.search) {
         const searchTerm = filters.search.toLowerCase()
@@ -415,7 +419,7 @@ export async function getAllRequests(filters?: {
 export async function createNewRequest(
   requestData: Omit<
     ActionRequest,
-    'id' | 'createdAt' | 'creatorId' | 'creatorName'
+    'id' | 'createdAt' | 'senderId' | 'senderName' | 'senderDepartment'
   >,
 ): Promise<string> {
   const currentUser = getCurrentUser()
@@ -434,8 +438,9 @@ export async function createNewRequest(
 
   const fullRequestData = {
     ...requestData,
-    creatorId: currentUser.uid,
-    creatorName: `${userProfile.firstName} ${userProfile.lastName}`,
+    senderId: currentUser.uid,
+    senderName: `${userProfile.firstName} ${userProfile.lastName}`,
+    senderDepartment: userProfile.department,
     createdAt: Date.now(),
   }
 
@@ -499,7 +504,7 @@ export async function deleteRequest(requestId: string): Promise<void> {
   if (!hasPermission(userProfile.role, 'delete_all', userProfile.email)) {
     // Check if user owns this request
     const request = await getRequestById(requestId)
-    if (!request || request.creatorId !== currentUser.uid) {
+    if (!request || request.senderId !== currentUser.uid) {
       throw new Error('Insufficient permissions to delete this request')
     }
 

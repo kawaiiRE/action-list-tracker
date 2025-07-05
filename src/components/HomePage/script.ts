@@ -18,7 +18,8 @@ import {
   type RequestComment,
   type UserProfile,
 } from '@/services/firebase'
-import { DEPARTMENTS, DEPARTMENT_OPTIONS } from '@/constants/departments'
+import { DEPARTMENTS, DEPARTMENT_OPTIONS, SENDER_DEPARTMENT_OPTIONS, RECEIVER_DEPARTMENT_OPTIONS } from '@/constants/departments'
+import * as XLSX from 'xlsx'
 
 export default defineComponent({
   name: 'HomePage',
@@ -45,8 +46,13 @@ export default defineComponent({
       deletingComment: false,
       filters: {
         status: 'All',
-        department: 'All',
+        senderDepartment: 'All Sender Departments',
+        receiverDepartment: 'All Receiver Departments',
+        search: '',
+        dateFrom: null as Date | null,
+        dateTo: null as Date | null,
       },
+      showAdvancedFilters: false,
       commentIdToDelete: null as string | null,
       showProfileModal: false,
       showUserManagementModal: false,
@@ -60,8 +66,9 @@ export default defineComponent({
         { key: 'title', label: 'Title', selected: true },
         { key: 'details', label: 'Details', selected: true },
         { key: 'status', label: 'Status', selected: true },
-        { key: 'department', label: 'Department', selected: true },
-        { key: 'creatorName', label: 'Creator', selected: true },
+        { key: 'senderName', label: 'Sender Name', selected: true },
+        { key: 'senderDepartment', label: 'Sender Department', selected: true },
+        { key: 'receiverDepartment', label: 'Receiver Department', selected: true },
         { key: 'createdAt', label: 'Created Date', selected: true },
         { key: 'updatedAt', label: 'Updated Date', selected: false },
       ],
@@ -71,6 +78,12 @@ export default defineComponent({
     // Department options
     departmentOptions(): string[] {
       return DEPARTMENT_OPTIONS
+    },
+    senderDepartmentOptions(): string[] {
+      return SENDER_DEPARTMENT_OPTIONS
+    },
+    receiverDepartmentOptions(): string[] {
+      return RECEIVER_DEPARTMENT_OPTIONS
     },
 
     // Authentication computed properties from store
@@ -113,13 +126,40 @@ export default defineComponent({
     // Existing computed properties
     filteredRequests(): ActionRequest[] {
       return this.requests.filter((request) => {
+        // Status filter
         const statusMatch =
           this.filters.status === 'All' ||
           request.status === this.filters.status
-        const departmentMatch =
-          this.filters.department === 'All' ||
-          request.department === this.filters.department
-        return statusMatch && departmentMatch
+
+        // Sender department filter
+        const senderDepartmentMatch =
+          this.filters.senderDepartment === 'All Sender Departments' ||
+          request.senderDepartment === this.filters.senderDepartment
+
+        // Receiver department filter
+        const receiverDepartmentMatch =
+          this.filters.receiverDepartment === 'All Receiver Departments' ||
+          request.receiverDepartment === this.filters.receiverDepartment
+
+        // Search filter
+        const searchMatch =
+          !this.filters.search ||
+          request.title.toLowerCase().includes(this.filters.search.toLowerCase()) ||
+          request.details.toLowerCase().includes(this.filters.search.toLowerCase()) ||
+          request.senderName.toLowerCase().includes(this.filters.search.toLowerCase()) ||
+          request.senderDepartment.toLowerCase().includes(this.filters.search.toLowerCase()) ||
+          request.receiverDepartment.toLowerCase().includes(this.filters.search.toLowerCase())
+
+        // Date filters
+        const dateFromMatch =
+          !this.filters.dateFrom ||
+          request.createdAt >= (this.filters.dateFrom as Date).getTime()
+
+        const dateToMatch =
+          !this.filters.dateTo ||
+          request.createdAt <= (this.filters.dateTo as Date).getTime()
+
+        return statusMatch && senderDepartmentMatch && receiverDepartmentMatch && searchMatch && dateFromMatch && dateToMatch
       })
     },
     availableActions() {
@@ -369,7 +409,7 @@ export default defineComponent({
       this.showExportModal = true
     },
 
-    async exportToCSV() {
+    async exportToExcel() {
       if (!this.hasSelectedFields) {
         return
       }
@@ -393,15 +433,17 @@ export default defineComponent({
           (field) => field.selected,
         )
 
-        // Create CSV header
+        // Create Excel data
+        const excelData = []
+
+        // Add headers
         const headers = selectedFields.map((field) => field.label)
         if (this.includeComments) {
           headers.push('Comments')
         }
+        excelData.push(headers)
 
-        // Create CSV rows
-        const rows = []
-
+        // Add data rows
         for (const request of requestsData) {
           const row = selectedFields.map((field) => {
             let value = request[field.key as keyof ActionRequest]
@@ -413,8 +455,7 @@ export default defineComponent({
               }
             }
 
-            // Escape and format value for CSV
-            return this.formatCSVValue(value)
+            return value || ''
           })
 
           // Add comments if requested
@@ -428,61 +469,40 @@ export default defineComponent({
                   ).toLocaleString()}): ${comment.text}`,
               )
               .join('; ')
-            row.push(this.formatCSVValue(commentsText))
+            row.push(commentsText)
           }
 
-          rows.push(row.join(','))
+          excelData.push(row)
         }
 
-        // Create CSV content
-        const csvContent = [headers.join(','), ...rows].join('\n')
+        // Create workbook and worksheet
+        const wb = XLSX.utils.book_new()
+        const ws = XLSX.utils.aoa_to_sheet(excelData)
 
-        // Create and download file
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `action-requests-${
+        // Add the worksheet to the workbook
+        XLSX.utils.book_append_sheet(wb, ws, 'Action Requests')
+
+        // Generate Excel file and download
+        const fileName = `action-requests-${
           new Date().toISOString().split('T')[0]
-        }.csv`
-        link.click()
-        URL.revokeObjectURL(url)
+        }.xlsx`
+        XLSX.writeFile(wb, fileName)
 
         this.$vaToast.init({
-          message: 'CSV exported successfully',
+          message: 'Excel file exported successfully',
           color: 'success',
         })
 
         this.showExportModal = false
       } catch (error) {
-        console.error('Error exporting CSV:', error)
+        console.error('Error exporting Excel:', error)
         this.$vaToast.init({
-          message: 'Error exporting CSV',
+          message: 'Error exporting Excel file',
           color: 'danger',
         })
       } finally {
         this.exportLoading = false
       }
-    },
-
-    formatCSVValue(value: any): string {
-      if (value === null || value === undefined) {
-        return ''
-      }
-
-      const stringValue = String(value)
-
-      // If the value contains commas, quotes, or newlines, wrap it in quotes
-      if (
-        stringValue.includes(',') ||
-        stringValue.includes('"') ||
-        stringValue.includes('\n')
-      ) {
-        // Escape quotes by doubling them
-        return `"${stringValue.replace(/"/g, '""')}"`
-      }
-
-      return stringValue
     },
 
     goHome() {

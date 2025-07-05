@@ -17,7 +17,8 @@
     "firebase": "^11.10.0",
     "vue": "^3.5.17",
     "vue-router": "^4.2.5",
-    "vuestic-ui": "^1.10.3"
+    "vuestic-ui": "^1.10.3",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",

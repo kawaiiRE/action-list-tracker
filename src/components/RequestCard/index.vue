@@ -15,11 +15,15 @@
       <div class="request-meta">
         <div class="meta-item">
           <va-icon name="person" size="small" />
-          <span><strong>Creator:</strong> {{ request.creatorName }}</span>
+          <span><strong>Sender:</strong> {{ request.senderName }}</span>
         </div>
         <div class="meta-item">
           <va-icon name="business" size="small" />
-          <span><strong>Department:</strong> {{ request.department }}</span>
+          <span><strong>From:</strong> {{ request.senderDepartment }}</span>
+        </div>
+        <div class="meta-item">
+          <va-icon name="arrow_forward" size="small" />
+          <span><strong>To:</strong> {{ request.receiverDepartment }}</span>
         </div>
         <div class="meta-item">
           <va-icon name="schedule" size="small" />

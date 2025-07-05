@@ -1,26 +1,41 @@
 <template>
   <va-card class="request-form-card">
-    <va-card-title>Request Details</va-card-title>
+    <va-card-title>Create New Request</va-card-title>
     <va-card-content>
-      <form @submit.prevent="onSubmit" class="request-form">
-        <div class="form-grid">
-          <va-select
-            v-model="form.department"
-            label="Department"
-            :options="departments"
-            placeholder="Select department"
-            :rules="[(v) => !!v || 'Department is required']"
-            required
-          />
-        </div>
+      <!-- Sender Preview -->
+      <va-card class="sender-preview-card mb-4" color="info" stripe>
+        <va-card-content>
+          <h4 class="mb-2">Request Preview</h4>
+          <p class="mb-1">
+            <strong>Sender:</strong> {{ currentUserProfile?.firstName }} {{ currentUserProfile?.lastName }}
+          </p>
+          <p class="mb-1">
+            <strong>From Department:</strong> {{ currentUserProfile?.department }}
+          </p>
+          <p class="mb-1">
+            <strong>To Department:</strong> {{ form.receiverDepartment || 'Not selected' }}
+          </p>
+        </va-card-content>
+      </va-card>
 
+      <form @submit.prevent="onSubmit" class="request-form">
         <va-input
           v-model="form.title"
           label="Request Title"
-          placeholder="Enter a descriptive title"
+          placeholder="Enter a descriptive title for your request"
           :rules="[(v) => !!v || 'Title is required']"
           required
-          class="full-width"
+          class="full-width mb-4"
+        />
+
+        <va-select
+          v-model="form.receiverDepartment"
+          label="Request To Department"
+          :options="departments"
+          placeholder="Select which department should handle this request"
+          :rules="[(v) => !!v || 'Receiver department is required']"
+          required
+          class="full-width mb-4"
         />
 
         <va-textarea

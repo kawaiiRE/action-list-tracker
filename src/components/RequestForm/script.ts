@@ -1,5 +1,7 @@
 import { defineComponent } from 'vue'
 import { DEPARTMENTS } from '@/constants/departments'
+import { userStore } from '@/stores/userStore'
+import type { UserProfile } from '@/services/firebase'
 
 export default defineComponent({
   name: 'RequestForm',
@@ -9,7 +11,7 @@ export default defineComponent({
         title: '',
         details: '',
         status: 'Open', // Default to Open
-        department: '',
+        receiverDepartment: '',
       },
       statuses: ['Open', 'In-Progress', 'Closed'],
       departments: DEPARTMENTS,
@@ -17,8 +19,11 @@ export default defineComponent({
     }
   },
   computed: {
+    currentUserProfile(): UserProfile | null {
+      return userStore.user
+    },
     isValid() {
-      return this.form.title.trim() && this.form.status && this.form.department
+      return this.form.title.trim() && this.form.status && this.form.receiverDepartment
     },
   },
   methods: {
@@ -37,7 +42,7 @@ export default defineComponent({
         title: '',
         details: '',
         status: 'Open',
-        department: '',
+        receiverDepartment: '',
       }
     },
   },

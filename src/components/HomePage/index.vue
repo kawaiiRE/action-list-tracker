@@ -159,17 +159,19 @@
           </div>
         </div>
 
-        <RequestList
-          :requests="filteredRequests"
-          :can-comment="canComment"
-          :can-delete="canDelete"
-          :can-delete-all="canDeleteAll"
-          :is-view-only="isViewOnly"
-          :current-user-id="currentUserProfile?.uid"
-          @comment="handleComment"
-          @view-request="showRequestDetails"
-          @delete-request="confirmDeleteRequestFromList"
-        />
+        <div class="request-list-container">
+          <RequestList
+            :requests="filteredRequests"
+            :can-comment="canComment"
+            :can-delete="canDelete"
+            :can-delete-all="canDeleteAll"
+            :is-view-only="isViewOnly"
+            :current-user-id="currentUserProfile?.uid"
+            @comment="handleComment"
+            @view-request="showRequestDetails"
+            @delete-request="confirmDeleteRequestFromList"
+          />
+        </div>
       </div>
 
       <!-- Add Request View -->

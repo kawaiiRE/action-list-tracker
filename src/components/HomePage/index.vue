@@ -41,12 +41,14 @@
     <va-container class="main-content">
       <!-- Home Page Selection Boxes -->
       <div v-if="currentView === 'home'" class="home-page">
-        <h2 class="dashboard-title">
+        <!-- <h2 class="dashboard-title">
           AZAD Properties : BAS - Project Integration Dashboard
-        </h2>
+        </h2> -->
         <div class="action-boxes">
           <va-card
-            v-for="(box, key) in availableActions"
+            v-for="[key, box] in Object.entries(availableActions).filter(
+              ([_, box]) => box.enabled,
+            )"
             :key="key"
             @click="selectAction(key)"
             class="action-box"
@@ -113,7 +115,11 @@
             prepend-icon="search"
             clearable
             class="search-input"
-          />
+          >
+            <template #appendInner>
+              <VaIcon name="search" color="secondary" />
+            </template>
+          </va-input>
 
           <!-- Main Filters -->
           <div class="filters-section">
@@ -204,6 +210,7 @@
         title="Request Details"
         size="large"
         hide-default-actions
+        fixed-layout
       >
         <template #header>
           <div class="modal-header">
@@ -307,7 +314,11 @@
                 </div>
 
                 <!-- Add Comment -->
-                <AddComment v-if="canComment" @submit="handleModalComment" />
+                <AddComment
+                  v-if="canComment"
+                  :isSubmittingComment="isSubmittingComment"
+                  @submit="handleModalComment"
+                />
                 <div v-else-if="isViewOnly" class="view-only-message">
                   <p>
                     <em>You have view-only access and cannot add comments.</em>

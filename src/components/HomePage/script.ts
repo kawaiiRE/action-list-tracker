@@ -81,6 +81,8 @@ export default defineComponent({
         { key: 'createdAt', label: 'Created Date', selected: true },
         { key: 'updatedAt', label: 'Updated Date', selected: false },
       ],
+
+      isSubmittingComment: false,
     }
   },
   computed: {
@@ -154,20 +156,20 @@ export default defineComponent({
         const searchMatch =
           !this.filters.search ||
           request.title
-            .toLowerCase()
-            .includes(this.filters.search.toLowerCase()) ||
+            ?.toLowerCase()
+            ?.includes(this.filters.search?.toLowerCase()) ||
           request.details
-            .toLowerCase()
-            .includes(this.filters.search.toLowerCase()) ||
+            ?.toLowerCase()
+            ?.includes(this.filters.search?.toLowerCase()) ||
           request.senderName
-            .toLowerCase()
-            .includes(this.filters.search.toLowerCase()) ||
+            ?.toLowerCase()
+            ?.includes(this.filters.search?.toLowerCase()) ||
           request.senderDepartment
-            .toLowerCase()
-            .includes(this.filters.search.toLowerCase()) ||
+            ?.toLowerCase()
+            ?.includes(this.filters.search?.toLowerCase()) ||
           request.receiverDepartment
-            .toLowerCase()
-            .includes(this.filters.search.toLowerCase())
+            ?.toLowerCase()
+            ?.includes(this.filters.search?.toLowerCase())
 
         // Date filters
         const dateFromMatch =
@@ -330,6 +332,7 @@ export default defineComponent({
     },
     async handleModalComment(text: string) {
       if (!this.selectedRequest?.id) return
+      this.isSubmittingComment = true
 
       try {
         await addCommentToRequest(this.selectedRequest.id, text)
@@ -341,6 +344,8 @@ export default defineComponent({
         await this.loadRequests()
       } catch (error) {
         console.error('Error adding comment:', error)
+      } finally {
+        this.isSubmittingComment = false
       }
     },
     confirmDeleteRequestFromList(request: ActionRequest) {

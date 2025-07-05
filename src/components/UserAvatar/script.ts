@@ -33,24 +33,6 @@ export default defineComponent({
       }
       return `${this.userProfile.firstName[0]}${this.userProfile.lastName[0]}`.toUpperCase()
     },
-    avatarColor() {
-      // Generate a consistent color based on the user's name
-      if (!this.userProfile) return 'primary'
-
-      const name = this.fullName
-      const colors = [
-        'primary',
-        'secondary',
-        'success',
-        'info',
-        'warning',
-        'danger',
-      ]
-      const hash = name
-        .split('')
-        .reduce((acc, char) => acc + char.charCodeAt(0), 0)
-      return colors[hash % colors.length]
-    },
   },
   methods: {
     toggleDropdown() {

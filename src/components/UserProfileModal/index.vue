@@ -1,10 +1,22 @@
 <template>
   <va-modal
     v-model="isVisible"
-    title="User Profile"
     size="medium"
-    :hide-default-actions="true"
+    hide-default-actions
+    fixed-layout
+    noOutsideDismiss
   >
+    <template #header>
+      <div class="modal-header">
+        <h4 class="modal-title">User Profile</h4>
+        <va-button
+          @click="$emit('close')"
+          icon="close"
+          preset="plain"
+          class="close-button"
+        />
+      </div>
+    </template>
     <form @submit.prevent="handleSubmit">
       <div class="profile-form">
         <div class="form-row">

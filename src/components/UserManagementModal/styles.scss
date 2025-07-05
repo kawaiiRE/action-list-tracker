@@ -1,15 +1,8 @@
+.add-user-button {
+  margin: 0 1rem;
+}
+
 .user-management {
-  .management-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-
-    h4 {
-      margin: 0;
-    }
-  }
-
   .add-user-form {
     margin-bottom: 2rem;
     border: 1px solid var(--va-background-border);

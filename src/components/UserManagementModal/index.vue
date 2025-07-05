@@ -1,21 +1,31 @@
 <template>
   <va-modal
     v-model="isVisible"
-    title="User Management"
     size="large"
-    :hide-default-actions="true"
-    @ok="close"
-    @cancel="close"
+    hide-default-actions
+    fixed-layout
+    noOutsideDismiss
   >
-    <div class="user-management">
-      <!-- Header with Add User button -->
-      <div class="management-header">
-        <h4>System Users</h4>
-        <va-button @click="showAddUserForm = true" color="primary" icon="add">
+    <template #header>
+      <div class="modal-header">
+        <h4 class="modal-title">System Users</h4>
+        <va-button
+          @click="showAddUserForm = true"
+          color="primary"
+          icon="add"
+          class="add-user-button"
+        >
           Add User
         </va-button>
+        <va-button
+          @click="isVisible = false"
+          icon="close"
+          preset="plain"
+          class="close-button"
+        />
       </div>
-
+    </template>
+    <div class="user-management">
       <!-- Add User Form -->
       <va-card v-if="showAddUserForm" class="add-user-form">
         <va-card-title>Add New User</va-card-title>
@@ -110,12 +120,12 @@
           {{ rowData.firstName }} {{ rowData.lastName }}
         </template>
 
-        <template #cell(role)="{ rowData }">
+        <!-- <template #cell(role)="{ rowData }">
           <va-badge
             :color="getRoleColor(rowData.role)"
             :text="getRoleLabel(rowData.role)"
           />
-        </template>
+        </template> -->
 
         <template #cell(actions)="{ rowData }">
           <div class="table-actions">
@@ -143,7 +153,8 @@
         v-model="showDeleteDialog"
         title="Confirm Delete"
         size="small"
-        :hide-default-actions="true"
+        hide-default-actions
+        fixed-layout
       >
         <div class="confirmation-dialog">
           <p>

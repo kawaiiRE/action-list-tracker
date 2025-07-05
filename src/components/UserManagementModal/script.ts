@@ -47,7 +47,7 @@ export default defineComponent({
         { key: 'email', label: 'Email' },
         { key: 'department', label: 'Department' },
         { key: 'title', label: 'Job Title' },
-        { key: 'role', label: 'Role' },
+        // { key: 'role', label: 'Role' },
         { key: 'actions', label: 'Actions' },
       ],
     }

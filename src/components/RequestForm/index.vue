@@ -14,10 +14,10 @@
             <strong>From Department:</strong>
             {{ currentUserProfile?.department }}
           </p>
-          <p class="preview-item">
+          <!-- <p class="preview-item">
             <strong>To Department:</strong>
             {{ form.receiverDepartment || 'Not selected' }}
-          </p>
+          </p> -->
         </va-card-content>
       </va-card>
 

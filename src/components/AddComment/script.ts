@@ -2,27 +2,31 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'AddComment',
+  props: {
+    isSubmittingComment: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       text: '',
-      isSubmitting: false
     }
   },
   computed: {
     isValid() {
       return this.text.trim().length > 0
-    }
+    },
   },
   methods: {
     async submit() {
-      if (!this.isValid || this.isSubmitting) return
-      
-      this.isSubmitting = true
+      if (!this.isValid || this.isSubmittingComment) return
+
       try {
         this.$emit('submit', this.text.trim())
         this.text = ''
-      } finally {
-        this.isSubmitting = false
+      } catch (error) {
+        console.error('Error submitting comment:', error)
       }
     },
     handleKeydown(event: KeyboardEvent) {
@@ -30,6 +34,6 @@ export default defineComponent({
         event.preventDefault()
         this.submit()
       }
-    }
-  }
+    },
+  },
 })

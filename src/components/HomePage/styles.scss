@@ -39,16 +39,19 @@
 }
 
 .action-boxes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  display: flex;
   gap: 1.5rem;
-  margin-top: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .action-box {
   cursor: pointer;
   transition: all 0.3s ease;
   min-height: 200px;
+  min-width: 300px;
+  max-width: 50%;
+  flex: 1;
 
   &:hover:not(.disabled) {
     transform: translateY(-4px);
@@ -106,6 +109,7 @@
 }
 
 .search-input {
+  width: 100%;
   margin-bottom: 1rem;
 }
 
@@ -266,4 +270,8 @@
 .logo {
   height: 5rem;
   padding-right: 1rem;
+}
+
+.va-input-wrapper__container {
+  --va-input-wrapper-background: white;
 }

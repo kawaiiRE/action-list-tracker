@@ -1,9 +1,9 @@
 <template>
   <div class="user-avatar-container">
     <va-avatar
-      :color="avatarColor"
       size="medium"
       class="user-avatar"
+      color="#ECF0F1"
       @click="toggleDropdown"
     >
       {{ initials }}

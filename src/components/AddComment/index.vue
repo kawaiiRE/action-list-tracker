@@ -5,18 +5,16 @@
         v-model="text"
         placeholder="Add a comment... (Ctrl+Enter to submit)"
         :rows="3"
-        :disabled="isSubmitting"
+        :disabled="isSubmittingComment"
         @keydown="handleKeydown"
         class="comment-textarea"
       />
       <div class="form-actions">
-        <div class="char-count">
-          {{ text.length }}/500
-        </div>
-        <va-button 
-          @click="submit" 
-          :disabled="!isValid || isSubmitting"
-          :loading="isSubmitting"
+        <div class="char-count">{{ text.length }}/500</div>
+        <va-button
+          @click="submit"
+          :disabled="!isValid || isSubmittingComment"
+          :loading="isSubmittingComment"
           color="primary"
           size="small"
         >

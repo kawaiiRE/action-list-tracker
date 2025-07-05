@@ -18,7 +18,12 @@ import {
   type RequestComment,
   type UserProfile,
 } from '@/services/firebase'
-import { DEPARTMENTS, DEPARTMENT_OPTIONS, SENDER_DEPARTMENT_OPTIONS, RECEIVER_DEPARTMENT_OPTIONS } from '@/constants/departments'
+import {
+  DEPARTMENTS,
+  DEPARTMENT_OPTIONS,
+  SENDER_DEPARTMENT_OPTIONS,
+  RECEIVER_DEPARTMENT_OPTIONS,
+} from '@/constants/departments'
 import * as XLSX from 'xlsx'
 
 export default defineComponent({
@@ -68,7 +73,11 @@ export default defineComponent({
         { key: 'status', label: 'Status', selected: true },
         { key: 'senderName', label: 'Sender Name', selected: true },
         { key: 'senderDepartment', label: 'Sender Department', selected: true },
-        { key: 'receiverDepartment', label: 'Receiver Department', selected: true },
+        {
+          key: 'receiverDepartment',
+          label: 'Receiver Department',
+          selected: true,
+        },
         { key: 'createdAt', label: 'Created Date', selected: true },
         { key: 'updatedAt', label: 'Updated Date', selected: false },
       ],
@@ -144,11 +153,21 @@ export default defineComponent({
         // Search filter
         const searchMatch =
           !this.filters.search ||
-          request.title.toLowerCase().includes(this.filters.search.toLowerCase()) ||
-          request.details.toLowerCase().includes(this.filters.search.toLowerCase()) ||
-          request.senderName.toLowerCase().includes(this.filters.search.toLowerCase()) ||
-          request.senderDepartment.toLowerCase().includes(this.filters.search.toLowerCase()) ||
-          request.receiverDepartment.toLowerCase().includes(this.filters.search.toLowerCase())
+          request.title
+            .toLowerCase()
+            .includes(this.filters.search.toLowerCase()) ||
+          request.details
+            .toLowerCase()
+            .includes(this.filters.search.toLowerCase()) ||
+          request.senderName
+            .toLowerCase()
+            .includes(this.filters.search.toLowerCase()) ||
+          request.senderDepartment
+            .toLowerCase()
+            .includes(this.filters.search.toLowerCase()) ||
+          request.receiverDepartment
+            .toLowerCase()
+            .includes(this.filters.search.toLowerCase())
 
         // Date filters
         const dateFromMatch =
@@ -159,7 +178,14 @@ export default defineComponent({
           !this.filters.dateTo ||
           request.createdAt <= (this.filters.dateTo as Date).getTime()
 
-        return statusMatch && senderDepartmentMatch && receiverDepartmentMatch && searchMatch && dateFromMatch && dateToMatch
+        return (
+          statusMatch &&
+          senderDepartmentMatch &&
+          receiverDepartmentMatch &&
+          searchMatch &&
+          dateFromMatch &&
+          dateToMatch
+        )
       })
     },
     availableActions() {

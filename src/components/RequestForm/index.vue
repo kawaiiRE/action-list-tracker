@@ -7,13 +7,16 @@
         <va-card-content>
           <h4 class="mb-2">Request Preview</h4>
           <p class="mb-1">
-            <strong>Sender:</strong> {{ currentUserProfile?.firstName }} {{ currentUserProfile?.lastName }}
+            <strong>Sender:</strong> {{ currentUserProfile?.firstName }}
+            {{ currentUserProfile?.lastName }}
           </p>
           <p class="mb-1">
-            <strong>From Department:</strong> {{ currentUserProfile?.department }}
+            <strong>From Department:</strong>
+            {{ currentUserProfile?.department }}
           </p>
           <p class="mb-1">
-            <strong>To Department:</strong> {{ form.receiverDepartment || 'Not selected' }}
+            <strong>To Department:</strong>
+            {{ form.receiverDepartment || 'Not selected' }}
           </p>
         </va-card-content>
       </va-card>

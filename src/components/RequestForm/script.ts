@@ -23,7 +23,11 @@ export default defineComponent({
       return userStore.user
     },
     isValid() {
-      return this.form.title.trim() && this.form.status && this.form.receiverDepartment
+      return (
+        this.form.title.trim() &&
+        this.form.status &&
+        this.form.receiverDepartment
+      )
     },
   },
   methods: {

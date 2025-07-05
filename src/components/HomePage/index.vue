@@ -104,7 +104,7 @@
             clearable
             class="search-input mb-3"
           />
-          
+
           <!-- Main Filters -->
           <div class="filters-section">
             <div class="main-filters mb-3">
@@ -127,7 +127,7 @@
                 class="filter-select"
               />
             </div>
-            
+
             <!-- Advanced Filters (collapsed by default) -->
             <va-collapse v-model="showAdvancedFilters">
               <template #header>
@@ -140,7 +140,7 @@
                   {{ showAdvancedFilters ? 'Hide' : 'Show' }} Advanced Filters
                 </va-button>
               </template>
-              
+
               <div class="advanced-filters mt-3">
                 <va-date-input
                   v-model="filters.dateFrom"
@@ -206,10 +206,12 @@
                 <strong>Sender:</strong> {{ selectedRequest.senderName }}
               </div>
               <div class="mb-3">
-                <strong>Sender Department:</strong> {{ selectedRequest.senderDepartment }}
+                <strong>Sender Department:</strong>
+                {{ selectedRequest.senderDepartment }}
               </div>
               <div class="mb-3">
-                <strong>Receiver Department:</strong> {{ selectedRequest.receiverDepartment }}
+                <strong>Receiver Department:</strong>
+                {{ selectedRequest.receiverDepartment }}
               </div>
               <div class="mb-3">
                 <strong>Created:</strong>

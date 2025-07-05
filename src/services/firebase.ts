@@ -53,6 +53,11 @@ const firebaseApp = initializeApp(firebaseConfig)
 const firestore = getFirestore(firebaseApp)
 const auth = getAuth(firebaseApp)
 
+// Create a separate Firebase app instance for admin operations
+// This prevents the current user from being signed out when creating new users
+const adminApp = initializeApp(firebaseConfig, 'admin')
+const adminAuth = getAuth(adminApp)
+
 export type UserRole = 'viewer' | 'user' | 'admin'
 
 export interface UserProfile {
@@ -122,6 +127,12 @@ export function onAuthStateChanged(callback: (user: User | null) => void) {
 
 export function getCurrentUser() {
   return auth.currentUser
+}
+
+// Helper function to verify current user authentication status
+export function verifyCurrentUserAuth(): boolean {
+  const currentUser = getCurrentUser()
+  return currentUser !== null
 }
 
 // Permission functions
@@ -218,7 +229,7 @@ export async function createUser(
   email: string,
   password: string,
   profile: Omit<UserProfile, 'uid' | 'email' | 'createdAt' | 'updatedAt'>,
-): Promise<void> {
+): Promise<{ success: boolean; uid: string }> {
   const currentUser = getCurrentUser()
   if (!currentUser) {
     throw new Error('User must be authenticated to create users')
@@ -230,8 +241,10 @@ export async function createUser(
   }
 
   try {
+    // Use the admin auth instance to create the user
+    // This prevents the current user from being signed out
     const userCredential = await createUserWithEmailAndPassword(
-      auth,
+      adminAuth,
       email,
       password,
     )
@@ -242,6 +255,12 @@ export async function createUser(
       email: newUser.email || email,
       ...profile,
     })
+
+    // Sign out the new user from the admin auth instance
+    // so they don't remain signed in on the admin app
+    await adminAuth.signOut()
+
+    return { success: true, uid: newUser.uid }
   } catch (error) {
     console.error('Error creating user:', error)
     throw error

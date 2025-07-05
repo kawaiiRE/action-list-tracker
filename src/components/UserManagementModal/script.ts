@@ -111,17 +111,20 @@ export default defineComponent({
         })
 
         this.$vaToast.init({
-          message: 'User created successfully',
+          message: `User created successfully`,
           color: 'success',
         })
 
         this.resetNewUserForm()
         this.showAddUserForm = false
+
         await this.loadUsers()
       } catch (error) {
         console.error('Error creating user:', error)
         this.$vaToast.init({
-          message: 'Error creating user',
+          message:
+            'Error creating user: ' +
+            (error instanceof Error ? error.message : 'Unknown error'),
           color: 'danger',
         })
       } finally {

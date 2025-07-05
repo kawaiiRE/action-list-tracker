@@ -90,14 +90,13 @@
               v-model="filters.status"
               :options="['All', 'Open', 'In-Progress', 'Closed']"
               label="Filter by Status"
-              class="mr-3"
-              style="width: 200px; display: inline-block"
+              class="mr-3 filter-select"
             />
             <va-select
               v-model="filters.department"
               :options="['All', 'Sales', 'Legal', 'Finance', 'Other']"
               label="Filter by Department"
-              style="width: 200px; display: inline-block"
+              class="filter-select"
             />
           </div>
         </div>

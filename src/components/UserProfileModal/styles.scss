@@ -1,4 +1,15 @@
 .profile-form {
+  .row {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+
+    .profile-form-input {
+      flex: 1;
+      margin-bottom: 1rem;
+    }
+  }
+
   .form-actions {
     display: flex;
     justify-content: flex-end;

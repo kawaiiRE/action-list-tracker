@@ -7,34 +7,37 @@
   >
     <form @submit.prevent="handleSubmit">
       <div class="profile-form">
-        <va-input
-          v-model="form.firstName"
-          label="First Name"
-          :rules="[required]"
-          class="mb-3"
-        />
+        <div class="row">
+          <va-input
+            v-model="form.firstName"
+            label="First Name"
+            :rules="[required]"
+            class="profile-form-input"
+          />
 
-        <va-input
-          v-model="form.lastName"
-          label="Last Name"
-          :rules="[required]"
-          class="mb-3"
-        />
+          <va-input
+            v-model="form.lastName"
+            label="Last Name"
+            :rules="[required]"
+            class="profile-form-input"
+          />
+        </div>
+        <div class="row">
+          <va-select
+            v-model="form.department"
+            label="Department"
+            :options="departments"
+            :rules="[required]"
+            class="profile-form-input"
+          />
 
-        <va-select
-          v-model="form.department"
-          label="Department"
-          :options="departments"
-          :rules="[required]"
-          class="mb-3"
-        />
-
-        <va-input
-          v-model="form.title"
-          label="Job Title"
-          :rules="[required]"
-          class="mb-3"
-        />
+          <va-input
+            v-model="form.title"
+            label="Job Title"
+            :rules="[required]"
+            class="profile-form-input"
+          />
+        </div>
 
         <va-input v-model="form.email" label="Email" disabled class="mb-3" />
 

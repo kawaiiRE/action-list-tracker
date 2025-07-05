@@ -1,11 +1,15 @@
 .request-card {
   margin-bottom: 1.5rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
+}
+
+.clickable-card {
+  cursor: pointer;
 }
 
 .card-header {
@@ -47,7 +51,7 @@
 
 .request-details {
   margin-bottom: 1rem;
-  
+
   p {
     margin: 0;
     line-height: 1.6;
@@ -64,7 +68,7 @@
 .comments-section {
   padding-top: 1rem;
   border-top: 1px solid var(--va-background-border);
-  
+
   h4 {
     margin: 0 0 1rem 0;
     font-size: 1.1rem;
@@ -111,7 +115,7 @@
   padding: 1.5rem;
   color: var(--va-secondary);
   font-style: italic;
-  
+
   p {
     margin: 0;
   }
@@ -128,11 +132,11 @@
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .request-title {
     margin-right: 0;
   }
-  
+
   .request-meta {
     flex-direction: column;
     gap: 0.5rem;

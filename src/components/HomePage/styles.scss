@@ -29,6 +29,11 @@
   flex-wrap: wrap;
 }
 
+.filter-select {
+  width: 200px;
+  display: inline-block;
+}
+
 .text-muted {
   color: var(--va-text-secondary);
 }

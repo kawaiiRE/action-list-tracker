@@ -210,6 +210,9 @@ export default defineComponent({
     required(value: string) {
       return !!value || 'This field is required'
     },
+    requiredSelect(value: any) {
+      return !!value || 'This field is required'
+    },
     email(value: string) {
       const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       return pattern.test(value) || 'Please enter a valid email address'

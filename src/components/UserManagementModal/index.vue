@@ -72,7 +72,7 @@
                   v-model="newUser.role"
                   :options="roleOptions"
                   label="Role"
-                  :rules="[required]"
+                  :rules="[requiredSelect]"
                   class="mb-3"
                 />
               </div>
@@ -122,7 +122,7 @@
               v-model="rowData.role"
               :options="roleOptions"
               size="small"
-              style="width: 120px"
+              class="role-select"
               @update:model-value="updateUserRole(rowData.uid, $event)"
             />
             <va-button

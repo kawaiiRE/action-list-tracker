@@ -1,9 +1,5 @@
 <template>
-  <va-card
-    class="request-card"
-    @click="handleCardClick"
-    style="cursor: pointer"
-  >
+  <va-card class="request-card clickable-card" @click="handleCardClick">
     <va-card-content>
       <!-- Header with title and status -->
       <div class="card-header">

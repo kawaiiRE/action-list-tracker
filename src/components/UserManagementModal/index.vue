@@ -64,7 +64,7 @@
                   v-model="newUser.department"
                   label="Department"
                   :options="departments"
-                  :rules="[required]"
+                  :rules="[requiredSelect]"
                   class="field-input"
                 />
               </div>
@@ -82,6 +82,8 @@
                 <va-select
                   v-model="newUser.role"
                   :options="roleOptions"
+                  value-by="value"
+                  text-by="text"
                   label="Role"
                   :rules="[requiredSelect]"
                   class="field-input"
@@ -132,6 +134,8 @@
             <va-select
               v-model="rowData.role"
               :options="roleOptions"
+              value-by="value"
+              text-by="text"
               size="small"
               class="role-select"
               @update:model-value="updateUserRole(rowData.uid, $event)"

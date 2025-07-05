@@ -1,5 +1,22 @@
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+
+  .modal-title {
+    flex: 1;
+  }
+
+  .header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
 .add-user-button {
-  margin: 0 1rem;
+  margin: 0;
 }
 
 .user-management {

@@ -11,8 +11,9 @@
     "start": "node server.js",
     "format": "prettier --write .",
     "predeploy": "npm run build",
-    "deploy": "git add . && git commit -m \"Deploy update\" && git push origin main",
-    "deploy:quick": "git add . && git commit -m \"Quick deploy\" && git push origin main"
+    "deploy": "gh-pages -d dist --dotfiles",
+    "deploy:clean": "gh-pages -d dist --dotfiles --remove \"*.map\"",
+    "deploy:source": "git add . && git commit -m \"Update source\" && git push origin main"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
@@ -28,7 +29,6 @@
     "@vue/cli-plugin-typescript": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
     "@vue/tsconfig": "^0.7.0",
-    "gh-pages": "^6.3.0",
     "material-design-icons-iconfont": "^6.7.0",
     "sass": "^1.69.5",
     "sass-loader": "^16.0.5",

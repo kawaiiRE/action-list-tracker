@@ -1,19 +1,19 @@
 import { defineComponent } from 'vue'
 import RequestList from '@/components/RequestList/index.vue'
 import RequestForm from '@/components/RequestForm/index.vue'
-import AddComment from '@/components/AddComment/index.vue'
 import LoginView from '@/components/LoginView/index.vue'
 import UserAvatar from '@/components/UserAvatar/index.vue'
 import UserProfileModal from '@/components/UserProfileModal/index.vue'
 import UserManagementModal from '@/components/UserManagementModal/index.vue'
+import RequestDetailsModal from '@/components/RequestDetailsModal/index.vue'
+import ExportModal from '@/components/ExportModal/index.vue'
+import EditRequestModal from '@/components/EditRequestModal/index.vue'
 import { userStore } from '@/stores/userStore'
 import {
   getAllRequests,
   createNewRequest,
   addCommentToRequest,
   getRequestComments,
-  deleteRequest as deleteRequestFromFirebase,
-  deleteComment as deleteCommentFromFirebase,
   type ActionRequest,
   type RequestComment,
   type UserProfile,
@@ -24,18 +24,19 @@ import {
   SENDER_DEPARTMENT_OPTIONS,
   RECEIVER_DEPARTMENT_OPTIONS,
 } from '@/constants/departments'
-import * as XLSX from 'xlsx'
 
 export default defineComponent({
   name: 'HomePage',
   components: {
     RequestList,
     RequestForm,
-    AddComment,
     LoginView,
     UserAvatar,
     UserProfileModal,
     UserManagementModal,
+    RequestDetailsModal,
+    ExportModal,
+    EditRequestModal,
   },
   data() {
     return {
@@ -44,11 +45,15 @@ export default defineComponent({
       requests: [] as ActionRequest[],
       selectedRequest: null as ActionRequest | null,
       selectedRequestComments: [] as RequestComment[],
-      showModal: false,
-      showDeleteRequestDialog: false,
-      showDeleteCommentDialog: false,
-      deletingRequest: false,
-      deletingComment: false,
+
+      // Modal states
+      showRequestDetailsModal: false,
+      showExportModal: false,
+      showEditRequestModal: false,
+      showProfileModal: false,
+      showUserManagementModal: false,
+
+      // Filters
       filters: {
         status: 'All',
         senderDepartment: 'All Sender Departments',
@@ -58,31 +63,6 @@ export default defineComponent({
         dateTo: null as Date | null,
       },
       showAdvancedFilters: false,
-      commentIdToDelete: null as string | null,
-      showProfileModal: false,
-      showUserManagementModal: false,
-      // Export modal state
-      showExportModal: false,
-      exportLoading: false,
-      includeComments: false,
-      applyCurrentFilters: true,
-      exportFields: [
-        { key: 'id', label: 'ID', selected: true },
-        { key: 'title', label: 'Title', selected: true },
-        { key: 'details', label: 'Details', selected: true },
-        { key: 'status', label: 'Status', selected: true },
-        { key: 'senderName', label: 'Sender Name', selected: true },
-        { key: 'senderDepartment', label: 'Sender Department', selected: true },
-        {
-          key: 'receiverDepartment',
-          label: 'Receiver Department',
-          selected: true,
-        },
-        { key: 'createdAt', label: 'Created Date', selected: true },
-        { key: 'updatedAt', label: 'Updated Date', selected: false },
-      ],
-
-      isSubmittingComment: false,
     }
   },
   computed: {
@@ -221,15 +201,6 @@ export default defineComponent({
         },
       }
     },
-
-    // Export computed properties
-    hasSelectedFields(): boolean {
-      return this.exportFields.some((field) => field.selected)
-    },
-
-    requestsToExport(): ActionRequest[] {
-      return this.applyCurrentFilters ? this.filteredRequests : this.requests
-    },
   },
   async created() {
     // Load requests when component is created
@@ -318,7 +289,7 @@ export default defineComponent({
     },
     async showRequestDetails(request: ActionRequest) {
       this.selectedRequest = request
-      this.showModal = true
+      this.showRequestDetailsModal = true
 
       // Load comments for this request
       if (request.id) {
@@ -330,96 +301,28 @@ export default defineComponent({
         }
       }
     },
-    async handleModalComment(text: string) {
-      if (!this.selectedRequest?.id) return
-      this.isSubmittingComment = true
-
-      try {
-        await addCommentToRequest(this.selectedRequest.id, text)
-        // Refresh comments
-        this.selectedRequestComments = await getRequestComments(
-          this.selectedRequest.id,
-        )
-        // Also refresh the main requests list
-        await this.loadRequests()
-      } catch (error) {
-        console.error('Error adding comment:', error)
-      } finally {
-        this.isSubmittingComment = false
-      }
+    // Modal event handlers
+    handleCommentAdded(requestId: string, commentText: string) {
+      this.handleComment({ id: requestId, text: commentText })
+    },
+    handleCommentDeleted() {
+      this.loadRequests()
+    },
+    handleRequestUpdated() {
+      this.loadRequests()
+    },
+    handleRequestDeleted() {
+      this.loadRequests()
+      this.showRequestDetailsModal = false
+    },
+    handleEditRequest(request: ActionRequest) {
+      this.selectedRequest = request
+      this.showEditRequestModal = true
+      this.showRequestDetailsModal = false
     },
     confirmDeleteRequestFromList(request: ActionRequest) {
       this.selectedRequest = request
-      this.confirmDeleteRequest()
-    },
-    confirmDeleteRequest() {
-      this.showDeleteRequestDialog = true
-    },
-    async deleteRequest() {
-      if (!this.selectedRequest?.id) return
-
-      this.deletingRequest = true
-      try {
-        await deleteRequestFromFirebase(this.selectedRequest.id)
-
-        // Reload requests to get fresh data
-        await this.reloadRequests()
-
-        this.showModal = false
-      } catch (error) {
-        console.error('Error deleting request:', error)
-      } finally {
-        this.deletingRequest = false
-        this.showDeleteRequestDialog = false
-      }
-    },
-    confirmDeleteComment(commentId: string | undefined) {
-      if (!commentId) return
-      this.commentIdToDelete = commentId
-      this.showDeleteCommentDialog = true
-    },
-    async deleteComment() {
-      if (!this.commentIdToDelete || !this.selectedRequest?.id) return
-
-      this.deletingComment = true
-      try {
-        await deleteCommentFromFirebase(
-          this.selectedRequest.id,
-          this.commentIdToDelete,
-        )
-
-        // Remove from local state
-        this.selectedRequestComments = this.selectedRequestComments.filter(
-          (comment) => comment.id !== this.commentIdToDelete,
-        )
-      } catch (error) {
-        console.error('Error deleting comment:', error)
-      } finally {
-        this.deletingComment = false
-        this.showDeleteCommentDialog = false
-        this.commentIdToDelete = null
-      }
-    },
-    getStatusColor(status: string) {
-      switch (status) {
-        case 'Open':
-          return 'warning'
-        case 'In-Progress':
-          return 'primary'
-        case 'Closed':
-          return 'success'
-        default:
-          return 'secondary'
-      }
-    },
-    formatDate(date: string | number) {
-      return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
+      this.showRequestDetailsModal = true
     },
 
     // Navigation methods
@@ -438,102 +341,6 @@ export default defineComponent({
     // Export methods
     openExportModal() {
       this.showExportModal = true
-    },
-
-    async exportToExcel() {
-      if (!this.hasSelectedFields) {
-        return
-      }
-
-      this.exportLoading = true
-
-      try {
-        // Get the requests to export
-        const requestsData = this.requestsToExport
-
-        if (requestsData.length === 0) {
-          this.$vaToast.init({
-            message: 'No data to export',
-            color: 'warning',
-          })
-          return
-        }
-
-        // Get selected field keys
-        const selectedFields = this.exportFields.filter(
-          (field) => field.selected,
-        )
-
-        // Create Excel data
-        const excelData = []
-
-        // Add headers
-        const headers = selectedFields.map((field) => field.label)
-        if (this.includeComments) {
-          headers.push('Comments')
-        }
-        excelData.push(headers)
-
-        // Add data rows
-        for (const request of requestsData) {
-          const row = selectedFields.map((field) => {
-            let value = request[field.key as keyof ActionRequest]
-
-            // Format specific fields
-            if (field.key === 'createdAt' || field.key === 'updatedAt') {
-              if (value && typeof value === 'number') {
-                value = new Date(value).toLocaleString()
-              }
-            }
-
-            return value || ''
-          })
-
-          // Add comments if requested
-          if (this.includeComments) {
-            const comments = request.comments || []
-            const commentsText = comments
-              .map(
-                (comment) =>
-                  `${comment.authorName} (${new Date(
-                    comment.createdAt,
-                  ).toLocaleString()}): ${comment.text}`,
-              )
-              .join('; ')
-            row.push(commentsText)
-          }
-
-          excelData.push(row)
-        }
-
-        // Create workbook and worksheet
-        const wb = XLSX.utils.book_new()
-        const ws = XLSX.utils.aoa_to_sheet(excelData)
-
-        // Add the worksheet to the workbook
-        XLSX.utils.book_append_sheet(wb, ws, 'Action Requests')
-
-        // Generate Excel file and download
-        const fileName = `action-requests-${
-          new Date().toISOString().split('T')[0]
-        }.xlsx`
-        XLSX.writeFile(wb, fileName)
-
-        this.$vaToast.init({
-          message: 'Excel file exported successfully',
-          color: 'success',
-        })
-
-        this.showExportModal = false
-      } catch (error) {
-        console.error('Error exporting Excel:', error)
-        this.$vaToast.init({
-          message: 'Error exporting Excel file',
-          color: 'danger',
-        })
-      } finally {
-        this.exportLoading = false
-      }
     },
 
     goHome() {

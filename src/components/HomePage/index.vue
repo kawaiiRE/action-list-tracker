@@ -205,247 +205,37 @@
       </div>
 
       <!-- Request Details Modal -->
-      <va-modal
-        v-model="showModal"
-        title="Request Details"
-        size="large"
-        hide-default-actions
-        fixed-layout
-      >
-        <template #header>
-          <div class="modal-header">
-            <h4 class="modal-title">Request Details</h4>
-            <va-button
-              @click="showModal = false"
-              icon="close"
-              preset="plain"
-              class="close-button"
-            />
-          </div>
-        </template>
-        <div v-if="selectedRequest">
-          <va-card>
-            <va-card-title>{{ selectedRequest.title }}</va-card-title>
-            <va-card-content>
-              <div class="request-field">
-                <strong>Status:</strong>
-                <va-badge
-                  :color="getStatusColor(selectedRequest.status)"
-                  :text="selectedRequest.status"
-                  class="status-badge"
-                />
-              </div>
-              <div class="request-field">
-                <strong>Sender:</strong> {{ selectedRequest.senderName }}
-              </div>
-              <div class="request-field">
-                <strong>Sender Department:</strong>
-                {{ selectedRequest.senderDepartment }}
-              </div>
-              <div class="request-field">
-                <strong>Receiver Department:</strong>
-                {{ selectedRequest.receiverDepartment }}
-              </div>
-              <div class="request-field">
-                <strong>Created:</strong>
-                {{ formatDate(selectedRequest.createdAt) }}
-              </div>
-              <div class="request-field">
-                <strong>Description:</strong>
-                <p>{{ selectedRequest.details }}</p>
-              </div>
+      <RequestDetailsModal
+        v-model="showRequestDetailsModal"
+        :request="selectedRequest"
+        :comments="selectedRequestComments"
+        :is-view-only="isViewOnly"
+        :can-comment="canComment"
+        :can-delete="canDelete"
+        :can-delete-all="canDeleteAll"
+        :current-user-id="currentUserProfile?.uid"
+        @comment-added="handleCommentAdded"
+        @comment-deleted="handleCommentDeleted"
+        @request-updated="handleRequestUpdated"
+        @request-deleted="handleRequestDeleted"
+        @edit-request="handleEditRequest"
+        @reload-data="loadRequests"
+      />
 
-              <!-- Request Actions -->
-              <div class="request-actions" v-if="!isViewOnly">
-                <va-button
-                  v-if="
-                    canDelete ||
-                    canDeleteAll ||
-                    selectedRequest.senderId === currentUserProfile?.uid
-                  "
-                  @click="confirmDeleteRequest"
-                  color="danger"
-                  icon="delete"
-                  size="small"
-                >
-                  Delete Request
-                </va-button>
-              </div>
-
-              <!-- Comments Section -->
-              <div class="comments-section">
-                <h4>Comments</h4>
-                <div v-if="selectedRequestComments.length > 0">
-                  <div
-                    v-for="comment in selectedRequestComments"
-                    :key="comment.id"
-                    class="comment-item"
-                  >
-                    <va-card>
-                      <va-card-content>
-                        <div class="comment-meta">
-                          <div>
-                            <strong>{{ comment.authorName }}</strong>
-                            <span class="comment-date">{{
-                              formatDate(comment.createdAt)
-                            }}</span>
-                          </div>
-                          <va-button
-                            v-if="
-                              !isViewOnly &&
-                              (canDelete ||
-                                canDeleteAll ||
-                                comment.authorId === currentUserProfile?.uid)
-                            "
-                            @click="confirmDeleteComment(comment.id)"
-                            color="danger"
-                            icon="delete"
-                            size="small"
-                            preset="plain"
-                          />
-                        </div>
-                        <p>{{ comment.text }}</p>
-                      </va-card-content>
-                    </va-card>
-                  </div>
-                </div>
-                <div v-else>
-                  <p class="no-comments">No comments yet.</p>
-                </div>
-
-                <!-- Add Comment -->
-                <AddComment
-                  v-if="canComment"
-                  :isSubmittingComment="isSubmittingComment"
-                  @submit="handleModalComment"
-                />
-                <div v-else-if="isViewOnly" class="view-only-message">
-                  <p>
-                    <em>You have view-only access and cannot add comments.</em>
-                  </p>
-                </div>
-              </div>
-            </va-card-content>
-          </va-card>
-        </div>
-      </va-modal>
-
-      <!-- Delete Request Confirmation Dialog -->
-      <va-modal
-        v-model="showDeleteRequestDialog"
-        title="Confirm Delete"
-        size="small"
-        :hideDefaultActions="true"
-      >
-        <div class="confirmation-dialog">
-          <p>
-            Are you sure you want to delete this request? This action cannot be
-            undone.
-          </p>
-          <div class="dialog-actions">
-            <va-button
-              @click="showDeleteRequestDialog = false"
-              color="secondary"
-              class="cancel-button"
-            >
-              Cancel
-            </va-button>
-            <va-button
-              @click="deleteRequest"
-              color="danger"
-              :loading="deletingRequest"
-            >
-              Delete
-            </va-button>
-          </div>
-        </div>
-      </va-modal>
-
-      <!-- Delete Comment Confirmation Dialog -->
-      <va-modal
-        v-model="showDeleteCommentDialog"
-        title="Confirm Delete"
-        size="small"
-        :hideDefaultActions="true"
-      >
-        <div class="confirmation-dialog">
-          <p>
-            Are you sure you want to delete this comment? This action cannot be
-            undone.
-          </p>
-          <div class="dialog-actions">
-            <va-button
-              @click="showDeleteCommentDialog = false"
-              color="secondary"
-              class="cancel-button"
-            >
-              Cancel
-            </va-button>
-            <va-button
-              @click="deleteComment"
-              color="danger"
-              :loading="deletingComment"
-            >
-              Delete
-            </va-button>
-          </div>
-        </div>
-      </va-modal>
-
-      <!-- Export Excel Modal -->
-      <va-modal
+      <!-- Export Modal -->
+      <ExportModal
         v-model="showExportModal"
-        title="Export Requests to Excel"
-        size="medium"
-        max-width="600px"
-      >
-        <div class="export-modal-content">
-          <p class="export-description">
-            Select the fields you want to include in the Excel export:
-          </p>
+        :requests="requests"
+        :current-filters="filters"
+      />
 
-          <div class="export-fields">
-            <va-checkbox
-              v-for="field in exportFields"
-              :key="field.key"
-              v-model="field.selected"
-              :label="field.label"
-              class="export-field-checkbox"
-            />
-          </div>
-
-          <div class="export-options">
-            <va-checkbox
-              v-model="includeComments"
-              label="Include Comments"
-              class="export-option-checkbox"
-            />
-            <va-checkbox
-              v-model="applyCurrentFilters"
-              label="Apply Current Filters"
-              class="export-option-checkbox"
-            />
-          </div>
-        </div>
-
-        <template #footer>
-          <va-button
-            @click="showExportModal = false"
-            preset="secondary"
-            class="cancel-button"
-          >
-            Cancel
-          </va-button>
-          <va-button
-            @click="exportToExcel"
-            color="primary"
-            :loading="exportLoading"
-            :disabled="!hasSelectedFields"
-          >
-            Export Excel
-          </va-button>
-        </template>
-      </va-modal>
+      <!-- Edit Request Modal -->
+      <EditRequestModal
+        v-model="showEditRequestModal"
+        :request="selectedRequest"
+        @request-updated="handleRequestUpdated"
+        @reload-data="loadRequests"
+      />
     </va-container>
 
     <!-- User Profile Modal -->

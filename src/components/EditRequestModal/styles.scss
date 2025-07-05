@@ -1,0 +1,48 @@
+.modal-header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 1rem;
+}
+
+.modal-title {
+  flex: 1;
+}
+
+.close-button {
+  margin-right: 1rem;
+}
+
+.request-form {
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-input {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  .form-textarea {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  .status-select {
+    max-width: 200px;
+    margin-bottom: 2rem;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.cancel-button {
+  margin-right: 0.5rem;
+}

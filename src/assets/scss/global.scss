@@ -49,4 +49,9 @@ body {
   color: #6c757d;
 }
 
+.va-input-wrapper__container {
+  --va-input-wrapper-background: white;
+  --va-background-computed: white;
+}
+
 // Component-specific semantic classes can be added here if needed across multiple components

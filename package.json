@@ -9,7 +9,10 @@
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
     "start": "node server.js",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "predeploy": "npm run build",
+    "deploy": "git add . && git commit -m \"Deploy update\" && git push origin main",
+    "deploy:quick": "git add . && git commit -m \"Quick deploy\" && git push origin main"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",

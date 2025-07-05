@@ -2,9 +2,10 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'LoginView',
+  emits: ['login-success'],
   methods: {
     enter() {
-      this.$router.push('/home')
-    }
-  }
+      this.$emit('login-success')
+    },
+  },
 })

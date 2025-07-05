@@ -2,24 +2,32 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'HomeView',
+  emits: [
+    'navigate-to-requests',
+    'navigate-to-add-request',
+    'navigate-to-open-requests',
+    'navigate-to-in-progress-requests',
+    'navigate-to-sales-requests',
+    'logout',
+  ],
   methods: {
     navigateToRequests() {
-      this.$router.push('/requests')
+      this.$emit('navigate-to-requests')
     },
     navigateToAddRequest() {
-      this.$router.push('/requests/add')
+      this.$emit('navigate-to-add-request')
     },
     navigateToOpenRequests() {
-      this.$router.push('/requests?status=Open')
+      this.$emit('navigate-to-open-requests')
     },
     navigateToInProgressRequests() {
-      this.$router.push('/requests?status=In-Progress')
+      this.$emit('navigate-to-in-progress-requests')
     },
     navigateToSalesRequests() {
-      this.$router.push('/requests?category=Sales')
+      this.$emit('navigate-to-sales-requests')
     },
     logout() {
-      this.$router.push('/')
+      this.$emit('logout')
     },
   },
 })

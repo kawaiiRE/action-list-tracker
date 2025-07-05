@@ -9,6 +9,7 @@ import RequestList from '@/components/RequestList/index.vue'
 export default defineComponent({
   name: 'RequestsView',
   components: { RequestList },
+  emits: ['go-to-add-request', 'go-back', 'view-request', 'filters-changed'],
   props: {
     category: String,
     status: String,
@@ -85,20 +86,16 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.initializeFiltersFromRoute()
+    this.initializeFiltersFromProps()
     this.loadRequests()
   },
   watch: {
-    '$route.query': {
-      handler: 'handleQueryChange',
-      deep: true,
-    },
-    filterStatus: 'updateQueryParams',
-    filterDept: 'updateQueryParams',
-    filterCreator: 'updateQueryParams',
-    search: 'updateQueryParams',
-    sortBy: 'updateQueryParams',
-    sortOrder: 'updateQueryParams',
+    filterStatus: 'handleFilterChange',
+    filterDept: 'handleFilterChange',
+    filterCreator: 'handleFilterChange',
+    search: 'handleFilterChange',
+    sortBy: 'handleFilterChange',
+    sortOrder: 'handleFilterChange',
   },
   methods: {
     async loadRequests() {
@@ -139,73 +136,33 @@ export default defineComponent({
       this.search = ''
     },
     goToAddRequest() {
-      this.$router.push('/requests/add')
+      this.$emit('go-to-add-request')
     },
     goBack() {
-      this.$router.push('/home')
+      this.$emit('go-back')
     },
     onViewRequest(request: any) {
-      this.$router.push(`/requests/${request.id}`)
+      this.$emit('view-request', request)
     },
-    initializeFiltersFromRoute() {
-      const { category, status, search, creator, sortBy, sortOrder } =
-        this.$route.query
-
-      if (category) {
-        this.filterDept = Array.isArray(category)
-          ? category[0] || ''
-          : category || ''
+    initializeFiltersFromProps() {
+      // Initialize filters from props instead of route
+      if (this.category) {
+        this.filterDept = this.category
       }
-      if (status) {
-        this.filterStatus = Array.isArray(status)
-          ? status[0] || ''
-          : status || ''
-      }
-      if (search) {
-        this.search = Array.isArray(search) ? search[0] || '' : search || ''
-      }
-      if (creator) {
-        this.filterCreator = Array.isArray(creator)
-          ? creator[0] || ''
-          : creator || ''
-      }
-      if (sortBy) {
-        this.sortBy = Array.isArray(sortBy)
-          ? sortBy[0] || 'createdAt'
-          : sortBy || 'createdAt'
-      }
-      if (sortOrder) {
-        this.sortOrder = Array.isArray(sortOrder)
-          ? sortOrder[0] || 'desc'
-          : sortOrder || 'desc'
+      if (this.status) {
+        this.filterStatus = this.status
       }
     },
-    handleQueryChange() {
-      this.initializeFiltersFromRoute()
-    },
-    updateQueryParams() {
-      const query: Record<string, any> = {}
-
-      if (this.filterStatus) {
-        query.status = this.filterStatus
-      }
-      if (this.filterDept) {
-        query.category = this.filterDept
-      }
-      if (this.filterCreator) {
-        query.creator = this.filterCreator
-      }
-      if (this.search) {
-        query.search = this.search
-      }
-      if (this.sortBy) {
-        query.sortBy = this.sortBy
-      }
-      if (this.sortOrder) {
-        query.sortOrder = this.sortOrder
-      }
-
-      this.$router.replace({ query })
+    handleFilterChange() {
+      // Emit filter changes to parent component
+      this.$emit('filters-changed', {
+        status: this.filterStatus,
+        department: this.filterDept,
+        creator: this.filterCreator,
+        search: this.search,
+        sortBy: this.sortBy,
+        sortOrder: this.sortOrder,
+      })
     },
   },
 })

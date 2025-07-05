@@ -8,6 +8,7 @@ import {
 
 export default defineComponent({
   name: 'RequestDetailView',
+  emits: ['request-deleted', 'edit-request', 'go-back'],
   props: {
     id: {
       type: String,
@@ -83,7 +84,7 @@ export default defineComponent({
             message: 'Request deleted successfully',
             color: 'success',
           })
-          this.$router.push('/requests')
+          this.$emit('request-deleted')
         } catch (error) {
           console.error('Error deleting request:', error)
           this.$vaToast.init({
@@ -95,11 +96,11 @@ export default defineComponent({
     },
     editRequest() {
       if (this.request) {
-        this.$router.push(`/requests/${this.request.id}/edit`)
+        this.$emit('edit-request', this.request)
       }
     },
     goBack() {
-      this.$router.push('/requests')
+      this.$emit('go-back')
     },
     getStatusColor(status: string) {
       switch (status) {

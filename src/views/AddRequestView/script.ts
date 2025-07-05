@@ -5,6 +5,7 @@ import RequestForm from '@/components/RequestForm/index.vue'
 export default defineComponent({
   name: 'AddRequestView',
   components: { RequestForm },
+  emits: ['go-back'],
   methods: {
     async onSubmit(payload: Omit<ActionRequest, 'createdAt' | 'id'>) {
       try {
@@ -18,7 +19,7 @@ export default defineComponent({
           color: 'success',
         })
 
-        this.$router.push('/requests')
+        // Request created successfully - no routing needed in SPA
       } catch (error) {
         console.error('Error creating request:', error)
         this.$vaToast.init({
@@ -28,7 +29,8 @@ export default defineComponent({
       }
     },
     goBack() {
-      this.$router.push('/requests')
+      // In SPA, this would emit an event to parent component
+      this.$emit('go-back')
     },
   },
 })

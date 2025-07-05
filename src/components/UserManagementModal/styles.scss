@@ -1,0 +1,20 @@
+.user-management {
+  .va-data-table {
+    .va-select {
+      min-width: 120px;
+    }
+  }
+
+  .gap-2 {
+    gap: 0.5rem;
+  }
+
+  .va-card {
+    border: 1px solid var(--va-background-border);
+  }
+
+  .va-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}

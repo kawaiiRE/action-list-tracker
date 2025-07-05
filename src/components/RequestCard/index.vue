@@ -19,7 +19,7 @@
       <div class="request-meta">
         <div class="meta-item">
           <va-icon name="person" size="small" />
-          <span><strong>Creator:</strong> {{ request.creator }}</span>
+          <span><strong>Creator:</strong> {{ request.creatorName }}</span>
         </div>
         <div class="meta-item">
           <va-icon name="business" size="small" />
@@ -47,6 +47,7 @@
           View Details
         </va-button>
         <va-button
+          v-if="!isViewOnly"
           @click="toggleComments"
           outline
           size="small"
@@ -56,6 +57,7 @@
           <span v-if="comments.length > 0">({{ comments.length }})</span>
         </va-button>
         <va-button
+          v-if="canDeleteThis"
           @click="deleteRequest"
           color="danger"
           size="small"
@@ -99,8 +101,15 @@
           </div>
 
           <!-- Add comment form -->
-          <div class="add-comment-section">
+          <div v-if="canCommentThis" class="add-comment-section">
             <add-comment @submit="onComment" />
+          </div>
+
+          <!-- View only message -->
+          <div v-else-if="isViewOnly" class="view-only-message">
+            <p class="text-muted">
+              <em>You have view-only access and cannot add comments.</em>
+            </p>
           </div>
         </div>
       </va-collapse>

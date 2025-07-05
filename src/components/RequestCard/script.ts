@@ -15,6 +15,26 @@ export default defineComponent({
       type: Object as PropType<ActionRequest>,
       required: true,
     },
+    canComment: {
+      type: Boolean,
+      default: false,
+    },
+    canDelete: {
+      type: Boolean,
+      default: false,
+    },
+    canDeleteAll: {
+      type: Boolean,
+      default: false,
+    },
+    isViewOnly: {
+      type: Boolean,
+      default: false,
+    },
+    currentUserId: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -44,6 +64,15 @@ export default defineComponent({
         hour: '2-digit',
         minute: '2-digit',
       })
+    },
+    canDeleteThis() {
+      return (
+        this.canDeleteAll ||
+        (this.canDelete && this.request.creatorId === this.currentUserId)
+      )
+    },
+    canCommentThis() {
+      return this.canComment && !this.isViewOnly
     },
   },
   methods: {

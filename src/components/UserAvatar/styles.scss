@@ -1,0 +1,50 @@
+.user-avatar-container {
+  position: relative;
+
+  .user-avatar {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.user-dropdown {
+  min-width: 280px;
+  margin-top: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  .user-info {
+    margin-bottom: 1rem;
+
+    .user-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .user-email {
+      color: var(--va-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .user-details {
+      .detail-item {
+        margin-bottom: 0.25rem;
+        font-size: 0.875rem;
+
+        strong {
+          color: var(--va-text-primary);
+        }
+      }
+    }
+  }
+
+  .dropdown-actions {
+    border-top: 1px solid var(--va-background-border);
+    padding-top: 1rem;
+  }
+}

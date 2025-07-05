@@ -10,6 +10,26 @@ export default defineComponent({
       type: Array as PropType<ActionRequest[]>,
       required: true,
     },
+    canComment: {
+      type: Boolean,
+      default: false,
+    },
+    canDelete: {
+      type: Boolean,
+      default: false,
+    },
+    canDeleteAll: {
+      type: Boolean,
+      default: false,
+    },
+    isViewOnly: {
+      type: Boolean,
+      default: false,
+    },
+    currentUserId: {
+      type: String,
+      default: '',
+    },
   },
   emits: ['comment', 'view-request', 'delete-request'],
   methods: {

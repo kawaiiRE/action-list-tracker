@@ -10,7 +10,16 @@ import {
   getDoc,
   deleteDoc,
   updateDoc,
+  setDoc,
 } from 'firebase/firestore'
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged as firebaseOnAuthStateChanged,
+  createUserWithEmailAndPassword,
+  type User,
+} from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAraOkRAPZ6RZTgeaX3QcMFRNe9qM2FsEQ',
@@ -24,10 +33,26 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig)
 const firestore = getFirestore(firebaseApp)
+const auth = getAuth(firebaseApp)
+
+export type UserRole = 'viewer' | 'user' | 'admin'
+
+export interface UserProfile {
+  uid: string
+  email: string
+  firstName: string
+  lastName: string
+  department: string
+  title: string
+  role: UserRole
+  createdAt: number
+  updatedAt?: number
+}
 
 export interface ActionRequest {
   id?: string
-  creator: string
+  creatorId: string
+  creatorName: string
   title: string
   details: string
   status: string
@@ -40,8 +65,244 @@ export interface ActionRequest {
 export interface RequestComment {
   id?: string
   text: string
-  author: string
+  authorId: string
+  authorName: string
   createdAt: number
+}
+
+// Auth functions
+export async function signIn(email: string, password: string) {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    )
+    return userCredential.user
+  } catch (error) {
+    console.error('Error signing in:', error)
+    throw error
+  }
+}
+
+export async function signOut() {
+  try {
+    await firebaseSignOut(auth)
+  } catch (error) {
+    console.error('Error signing out:', error)
+    throw error
+  }
+}
+
+export function onAuthStateChanged(callback: (user: User | null) => void) {
+  return firebaseOnAuthStateChanged(auth, callback)
+}
+
+export function getCurrentUser() {
+  return auth.currentUser
+}
+
+// Permission functions
+export function hasPermission(userRole: UserRole, permission: string): boolean {
+  const permissions = {
+    viewer: ['view'],
+    user: ['view', 'create', 'comment', 'edit_own', 'delete_own'],
+    admin: [
+      'view',
+      'create',
+      'comment',
+      'edit_own',
+      'delete_own',
+      'edit_all',
+      'delete_all',
+      'manage_users',
+    ],
+  }
+
+  return permissions[userRole]?.includes(permission) || false
+}
+
+export function canViewOnly(userRole: UserRole): boolean {
+  return userRole === 'viewer'
+}
+
+export function canManageUsers(userRole: UserRole): boolean {
+  return userRole === 'admin'
+}
+
+// Admin user management functions
+export async function getAllUsers(): Promise<UserProfile[]> {
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    throw new Error('User must be authenticated to access users')
+  }
+
+  const userProfile = await getUserProfile(currentUser.uid)
+  if (!userProfile || !canManageUsers(userProfile.role)) {
+    throw new Error('Insufficient permissions to access users')
+  }
+
+  try {
+    const usersCollection = collection(firestore, 'users')
+    const querySnapshot = await getDocs(usersCollection)
+
+    return querySnapshot.docs.map(
+      (doc) =>
+        ({
+          uid: doc.id,
+          ...doc.data(),
+        } as UserProfile),
+    )
+  } catch (error) {
+    console.error('Error fetching users:', error)
+    throw error
+  }
+}
+
+export async function createUser(
+  email: string,
+  password: string,
+  profile: Omit<UserProfile, 'uid' | 'email' | 'createdAt' | 'updatedAt'>,
+): Promise<void> {
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    throw new Error('User must be authenticated to create users')
+  }
+
+  const userProfile = await getUserProfile(currentUser.uid)
+  if (!userProfile || !canManageUsers(userProfile.role)) {
+    throw new Error('Insufficient permissions to create users')
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    )
+    const newUser = userCredential.user
+
+    await createUserProfile({
+      uid: newUser.uid,
+      email: newUser.email || email,
+      ...profile,
+    })
+  } catch (error) {
+    console.error('Error creating user:', error)
+    throw error
+  }
+}
+
+export async function updateUserRole(
+  uid: string,
+  role: UserRole,
+): Promise<void> {
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    throw new Error('User must be authenticated to update user roles')
+  }
+
+  const userProfile = await getUserProfile(currentUser.uid)
+  if (!userProfile || !canManageUsers(userProfile.role)) {
+    throw new Error('Insufficient permissions to update user roles')
+  }
+
+  try {
+    await updateUserProfile(uid, { role })
+  } catch (error) {
+    console.error('Error updating user role:', error)
+    throw error
+  }
+}
+
+export async function deleteUser(uid: string): Promise<void> {
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    throw new Error('User must be authenticated to delete users')
+  }
+
+  const userProfile = await getUserProfile(currentUser.uid)
+  if (!userProfile || !canManageUsers(userProfile.role)) {
+    throw new Error('Insufficient permissions to delete users')
+  }
+
+  try {
+    const userDoc = doc(firestore, 'users', uid)
+    await deleteDoc(userDoc)
+  } catch (error) {
+    console.error('Error deleting user:', error)
+    throw error
+  }
+}
+
+export async function initializeAdminUser(): Promise<void> {
+  try {
+    // Check if admin user already exists
+    const adminUser = await getUserProfile('admin-user-id')
+    if (adminUser) {
+      return // Admin user already exists
+    }
+
+    // Create admin user
+    await createUserWithEmailAndPassword(auth, 'admin@admin.com', 'admin1234')
+
+    // Note: In a real application, you would want to handle this differently
+    // as we can't easily get the UID of the created user in this context
+    // For now, we'll create a script to initialize the admin user
+    console.log('Admin user created successfully')
+  } catch (error) {
+    console.error('Error initializing admin user:', error)
+  }
+}
+
+// User Profile functions
+export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+  try {
+    const userDoc = doc(firestore, 'users', uid)
+    const docSnapshot = await getDoc(userDoc)
+
+    if (!docSnapshot.exists()) {
+      return null
+    }
+
+    return { uid, ...docSnapshot.data() } as UserProfile
+  } catch (error) {
+    console.error('Error getting user profile:', error)
+    throw error
+  }
+}
+
+export async function createUserProfile(
+  profile: Omit<UserProfile, 'createdAt' | 'updatedAt'>,
+): Promise<void> {
+  try {
+    const userDoc = doc(firestore, 'users', profile.uid)
+    await setDoc(userDoc, {
+      ...profile,
+      role: profile.role || 'user', // Default role is 'user'
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
+  } catch (error) {
+    console.error('Error creating user profile:', error)
+    throw error
+  }
+}
+
+export async function updateUserProfile(
+  uid: string,
+  updates: Partial<Omit<UserProfile, 'uid' | 'createdAt'>>,
+): Promise<void> {
+  try {
+    const userDoc = doc(firestore, 'users', uid)
+    await updateDoc(userDoc, {
+      ...updates,
+      updatedAt: Date.now(),
+    })
+  } catch (error) {
+    console.error('Error updating user profile:', error)
+    throw error
+  }
 }
 
 const requestsCollection = collection(firestore, 'requests')
@@ -51,6 +312,11 @@ export async function getAllRequests(filters?: {
   department?: string
   search?: string
 }): Promise<ActionRequest[]> {
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    throw new Error('User must be authenticated to access requests')
+  }
+
   try {
     let requestQuery = query(
       requestsCollection,
@@ -93,9 +359,33 @@ export async function getAllRequests(filters?: {
 }
 
 export async function createNewRequest(
-  requestData: ActionRequest,
+  requestData: Omit<
+    ActionRequest,
+    'id' | 'createdAt' | 'creatorId' | 'creatorName'
+  >,
 ): Promise<string> {
-  const documentReference = await addDoc(requestsCollection, requestData)
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    throw new Error('User must be authenticated to create requests')
+  }
+
+  const userProfile = await getUserProfile(currentUser.uid)
+  if (!userProfile) {
+    throw new Error('User profile not found')
+  }
+
+  if (!hasPermission(userProfile.role, 'create')) {
+    throw new Error('Insufficient permissions to create requests')
+  }
+
+  const fullRequestData = {
+    ...requestData,
+    creatorId: currentUser.uid,
+    creatorName: `${userProfile.firstName} ${userProfile.lastName}`,
+    createdAt: Date.now(),
+  }
+
+  const documentReference = await addDoc(requestsCollection, fullRequestData)
   return documentReference.id
 }
 
@@ -141,6 +431,29 @@ export async function getRequestById(
 }
 
 export async function deleteRequest(requestId: string): Promise<void> {
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    throw new Error('User must be authenticated to delete requests')
+  }
+
+  const userProfile = await getUserProfile(currentUser.uid)
+  if (!userProfile) {
+    throw new Error('User profile not found')
+  }
+
+  // Check if user can delete all requests or only their own
+  if (!hasPermission(userProfile.role, 'delete_all')) {
+    // Check if user owns this request
+    const request = await getRequestById(requestId)
+    if (!request || request.creatorId !== currentUser.uid) {
+      throw new Error('Insufficient permissions to delete this request')
+    }
+
+    if (!hasPermission(userProfile.role, 'delete_own')) {
+      throw new Error('Insufficient permissions to delete requests')
+    }
+  }
+
   try {
     const requestDoc = doc(firestore, 'requests', requestId)
     await deleteDoc(requestDoc)
@@ -169,15 +482,29 @@ export async function updateRequest(
 export async function addCommentToRequest(
   requestId: string,
   commentText: string,
-  author: string = 'Anonymous',
 ): Promise<string> {
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    throw new Error('User must be authenticated to add comments')
+  }
+
+  const userProfile = await getUserProfile(currentUser.uid)
+  if (!userProfile) {
+    throw new Error('User profile not found')
+  }
+
+  if (!hasPermission(userProfile.role, 'comment')) {
+    throw new Error('Insufficient permissions to add comments')
+  }
+
   const commentsCollection = collection(
     doc(firestore, 'requests', requestId),
     'comments',
   )
   const documentReference = await addDoc(commentsCollection, {
     text: commentText,
-    author: author,
+    authorId: currentUser.uid,
+    authorName: `${userProfile.firstName} ${userProfile.lastName}`,
     createdAt: Date.now(),
   })
   return documentReference.id
@@ -187,6 +514,42 @@ export async function deleteComment(
   requestId: string,
   commentId: string,
 ): Promise<void> {
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    throw new Error('User must be authenticated to delete comments')
+  }
+
+  const userProfile = await getUserProfile(currentUser.uid)
+  if (!userProfile) {
+    throw new Error('User profile not found')
+  }
+
+  // Check if user can delete all comments or only their own
+  if (!hasPermission(userProfile.role, 'delete_all')) {
+    // Get comment to check ownership
+    const commentDoc = doc(
+      firestore,
+      'requests',
+      requestId,
+      'comments',
+      commentId,
+    )
+    const commentSnapshot = await getDoc(commentDoc)
+
+    if (!commentSnapshot.exists()) {
+      throw new Error('Comment not found')
+    }
+
+    const comment = commentSnapshot.data()
+    if (comment.authorId !== currentUser.uid) {
+      throw new Error('Insufficient permissions to delete this comment')
+    }
+
+    if (!hasPermission(userProfile.role, 'delete_own')) {
+      throw new Error('Insufficient permissions to delete comments')
+    }
+  }
+
   try {
     const commentDoc = doc(
       firestore,

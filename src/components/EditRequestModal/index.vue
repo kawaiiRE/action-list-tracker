@@ -4,6 +4,8 @@
     title="Edit Request"
     size="large"
     hide-default-actions
+    fixed-layout
+    noOutsideDismiss
   >
     <template #header>
       <div class="modal-header">
@@ -43,13 +45,13 @@
               class="form-textarea"
             />
 
-            <va-select
+            <!-- <va-select
               v-model="editForm.status"
               label="Status"
               :options="statusOptions"
               :rules="[required]"
               class="form-select"
-            />
+            /> -->
 
             <div class="form-actions">
               <va-button

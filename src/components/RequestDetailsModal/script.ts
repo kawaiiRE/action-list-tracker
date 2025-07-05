@@ -4,8 +4,11 @@ import {
   updateRequest,
   deleteRequest as deleteRequestFromFirebase,
   deleteComment as deleteCommentFromFirebase,
+  addCommentToRequest,
+  addSystemCommentToRequest,
 } from '@/services/firebase'
 import AddComment from '@/components/AddComment/index.vue'
+import { getStatusColor } from '@/utils/statusColors'
 
 export default defineComponent({
   name: 'RequestDetailsModal',
@@ -65,6 +68,7 @@ export default defineComponent({
       commentToDelete: null as string | null,
       editableStatus: '',
       statusOptions: ['Open', 'In-Progress', 'Closed'],
+      isLoadingComments: false,
     }
   },
   computed: {
@@ -97,8 +101,17 @@ export default defineComponent({
     async updateStatus(newStatus: string) {
       if (!this.request || newStatus === this.request.status) return
 
+      const oldStatus = this.request.status
+      this.isLoadingComments = true
       try {
         await updateRequest(this.request.id!, { status: newStatus })
+
+        // Add a system comment to log the status change
+        await addSystemCommentToRequest(
+          this.request.id!,
+          `Status changed from "${oldStatus}" to "${newStatus}"`,
+        )
+
         this.$vaToast.init({
           message: 'Status updated successfully',
           color: 'success',
@@ -113,6 +126,8 @@ export default defineComponent({
         })
         // Revert the status
         this.editableStatus = this.request.status
+      } finally {
+        this.isLoadingComments = false
       }
     },
     confirmDelete() {
@@ -191,16 +206,7 @@ export default defineComponent({
       return new Date(timestamp).toLocaleString()
     },
     getStatusColor(status: string) {
-      switch (status) {
-        case 'Open':
-          return 'info'
-        case 'In-Progress':
-          return 'warning'
-        case 'Closed':
-          return 'success'
-        default:
-          return 'secondary'
-      }
+      return getStatusColor(status)
     },
   },
 })

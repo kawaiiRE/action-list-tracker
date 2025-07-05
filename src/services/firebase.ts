@@ -95,6 +95,7 @@ export interface RequestComment {
   authorId: string
   authorName: string
   createdAt: number
+  isSystemComment?: boolean
 }
 
 // Auth functions
@@ -475,10 +476,13 @@ export async function getRequestComments(
     'comments',
   )
   const querySnapshot = await getDocs(commentsCollection)
-  return querySnapshot.docs.map(
+  const comments = querySnapshot.docs.map(
     (document) =>
       ({ id: document.id, ...(document.data() as any) } as RequestComment),
   )
+
+  // Sort comments by creation date (oldest first)
+  return comments.sort((a, b) => a.createdAt - b.createdAt)
 }
 
 export async function getRequestById(
@@ -641,4 +645,32 @@ export async function deleteComment(
     console.error('Error deleting comment:', error)
     throw error
   }
+}
+
+export async function addSystemCommentToRequest(
+  requestId: string,
+  commentText: string,
+): Promise<string> {
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    throw new Error('User must be authenticated to add system comments')
+  }
+
+  const userProfile = await getUserProfile(currentUser.uid)
+  if (!userProfile) {
+    throw new Error('User profile not found')
+  }
+
+  const commentsCollection = collection(
+    doc(firestore, 'requests', requestId),
+    'comments',
+  )
+  const documentReference = await addDoc(commentsCollection, {
+    text: commentText,
+    authorId: 'system',
+    authorName: `System (${userProfile.firstName} ${userProfile.lastName})`,
+    createdAt: Date.now(),
+    isSystemComment: true,
+  })
+  return documentReference.id
 }

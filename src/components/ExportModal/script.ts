@@ -1,14 +1,19 @@
 import { defineComponent, type PropType } from 'vue'
 import type { ActionRequest } from '@/services/firebase'
+import draggable from 'vuedraggable'
 
 export interface ExportField {
   key: string
   label: string
   selected: boolean
+  order: number
 }
 
 export default defineComponent({
   name: 'ExportModal',
+  components: {
+    draggable,
+  },
   props: {
     modelValue: {
       type: Boolean,
@@ -29,19 +34,33 @@ export default defineComponent({
       exportLoading: false,
       includeComments: false,
       applyCurrentFilters: true,
+      useDateRange: false,
+      dateFrom: null as Date | null,
+      dateTo: null as Date | null,
       exportFields: [
-        { key: 'title', label: 'Title', selected: true },
-        { key: 'senderName', label: 'Sender Name', selected: true },
-        { key: 'senderDepartment', label: 'Sender Department', selected: true },
+        { key: 'title', label: 'Request Title', selected: true, order: 1 },
+        {
+          key: 'senderName',
+          label: 'Requestor Name',
+          selected: true,
+          order: 2,
+        },
+        {
+          key: 'senderDepartment',
+          label: 'Requestor Department',
+          selected: true,
+          order: 3,
+        },
         {
           key: 'receiverDepartment',
-          label: 'Receiver Department',
+          label: 'Assigned Department',
           selected: true,
+          order: 4,
         },
-        { key: 'status', label: 'Status', selected: true },
-        { key: 'details', label: 'Details', selected: true },
-        { key: 'createdAt', label: 'Created Date', selected: true },
-        { key: 'updatedAt', label: 'Updated Date', selected: false },
+        { key: 'status', label: 'Status', selected: true, order: 5 },
+        { key: 'details', label: 'Description', selected: true, order: 6 },
+        { key: 'createdAt', label: 'Date Created', selected: true, order: 7 },
+        { key: 'updatedAt', label: 'Date Modified', selected: false, order: 8 },
       ] as ExportField[],
     }
   },
@@ -57,6 +76,85 @@ export default defineComponent({
     hasSelectedFields() {
       return this.exportFields.some((field) => field.selected)
     },
+    sortedExportFields: {
+      get() {
+        return [...this.exportFields].sort((a, b) => a.order - b.order)
+      },
+      set(value: ExportField[]) {
+        // Update the order property based on the new array position
+        value.forEach((field, index) => {
+          field.order = index + 1
+        })
+        this.exportFields = value
+      },
+    },
+    requestsToExport() {
+      let filteredRequests = [...this.requests]
+
+      // Apply current filters if requested
+      if (this.applyCurrentFilters && this.currentFilters) {
+        // Apply the filters passed from parent component
+        filteredRequests = filteredRequests.filter((request) => {
+          // Status filter
+          const statusMatch =
+            !this.currentFilters.status ||
+            this.currentFilters.status === 'All' ||
+            request.status === this.currentFilters.status
+
+          // Department filters
+          const senderDepartmentMatch =
+            !this.currentFilters.senderDepartment ||
+            this.currentFilters.senderDepartment === 'All Sender Departments' ||
+            request.senderDepartment === this.currentFilters.senderDepartment
+
+          const receiverDepartmentMatch =
+            !this.currentFilters.receiverDepartment ||
+            this.currentFilters.receiverDepartment ===
+              'All Receiver Departments' ||
+            request.receiverDepartment ===
+              this.currentFilters.receiverDepartment
+
+          // Search filter
+          const searchMatch =
+            !this.currentFilters.search ||
+            request.title
+              ?.toLowerCase()
+              ?.includes(this.currentFilters.search?.toLowerCase()) ||
+            request.details
+              ?.toLowerCase()
+              ?.includes(this.currentFilters.search?.toLowerCase()) ||
+            request.senderName
+              ?.toLowerCase()
+              ?.includes(this.currentFilters.search?.toLowerCase())
+
+          return (
+            statusMatch &&
+            senderDepartmentMatch &&
+            receiverDepartmentMatch &&
+            searchMatch
+          )
+        })
+      }
+
+      // Apply date range filter if enabled
+      if (this.useDateRange) {
+        filteredRequests = filteredRequests.filter((request) => {
+          const requestDate = request.createdAt
+
+          // From date filter
+          const fromDateMatch =
+            !this.dateFrom || requestDate >= this.dateFrom.getTime()
+
+          // To date filter
+          const toDateMatch =
+            !this.dateTo || requestDate <= this.dateTo.getTime()
+
+          return fromDateMatch && toDateMatch
+        })
+      }
+
+      return filteredRequests
+    },
   },
   methods: {
     closeModal() {
@@ -65,17 +163,19 @@ export default defineComponent({
     async exportToExcel() {
       this.exportLoading = true
       try {
-        // Get the data to export
-        let dataToExport = this.requests
+        // Get the filtered data to export
+        const dataToExport = this.requestsToExport
 
-        // Apply filters if requested
-        if (this.applyCurrentFilters) {
-          // Apply filtering logic here based on currentFilters
-          // This would match the filtering logic from the parent component
+        if (dataToExport.length === 0) {
+          this.$vaToast.init({
+            message: 'No data to export based on selected filters',
+            color: 'warning',
+          })
+          return
         }
 
-        // Select only the chosen fields
-        const selectedFields = this.exportFields.filter(
+        // Select only the chosen fields in their ordered sequence
+        const selectedFields = this.sortedExportFields.filter(
           (field) => field.selected,
         )
 

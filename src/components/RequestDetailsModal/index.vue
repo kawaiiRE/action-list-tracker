@@ -1,20 +1,30 @@
 <template>
   <va-modal
     v-model="isVisible"
-    title="Request Details"
     size="large"
     hide-default-actions
     fixed-layout
+    noOutsideDismiss
   >
     <template #header>
       <div class="modal-header">
         <h4 class="modal-title">Request Details</h4>
-        <va-button
-          @click="closeModal"
-          icon="close"
-          preset="plain"
-          class="close-button"
-        />
+        <div class="header-actions">
+          <div class="status-container" v-if="request">
+            <span class="status-label">Status:</span>
+            <va-badge
+              :color="getStatusColor(request.status)"
+              :text="request.status"
+              class="status-badge-header"
+            />
+          </div>
+          <va-button
+            @click="closeModal"
+            icon="close"
+            preset="plain"
+            class="close-button"
+          />
+        </div>
       </div>
     </template>
 
@@ -78,16 +88,28 @@
           <!-- Comments Section -->
           <div class="comments-section">
             <h4>Comments</h4>
-            <div v-if="comments.length > 0">
+            <div v-if="isLoadingComments">
+              <va-icon name="autorenew" spin size="large" color="primary" />
+            </div>
+            <div v-else-if="comments.length > 0">
               <div
                 v-for="comment in comments"
                 :key="comment.id"
                 class="comment-item"
+                :class="{ 'system-comment': comment.isSystemComment }"
               >
-                <va-card>
+                <va-card
+                  :class="{ 'system-comment-card': comment.isSystemComment }"
+                >
                   <va-card-content>
                     <div class="comment-meta">
                       <div>
+                        <va-icon
+                          v-if="comment.isSystemComment"
+                          name="settings"
+                          size="small"
+                          class="system-comment-icon"
+                        />
                         <strong>{{ comment.authorName }}</strong>
                         <span class="comment-date">{{
                           formatDate(comment.createdAt)
@@ -96,6 +118,7 @@
                       <va-button
                         v-if="
                           !isViewOnly &&
+                          !comment.isSystemComment &&
                           (canDelete ||
                             canDeleteAll ||
                             comment.authorId === currentUserId)
@@ -107,7 +130,13 @@
                         preset="plain"
                       />
                     </div>
-                    <p>{{ comment.text }}</p>
+                    <p
+                      :class="{
+                        'system-comment-text': comment.isSystemComment,
+                      }"
+                    >
+                      {{ comment.text }}
+                    </p>
                   </va-card-content>
                 </va-card>
               </div>

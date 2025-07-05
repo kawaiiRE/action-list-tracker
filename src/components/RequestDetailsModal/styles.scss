@@ -1,21 +1,48 @@
 .modal-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding-bottom: 1rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--va-background-secondary);
+  border-radius: 0.5rem;
+  border: 1px solid var(--va-background-border);
+}
+
+.status-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--va-text-secondary);
+}
+
+// Modal title
 .modal-title {
   flex: 1;
 }
 
+// Close button
 .close-button {
   margin-right: 1rem;
 }
 
+// Request field
 .request-field {
   margin-bottom: 1rem;
 }
 
+// Status select and badge
 .status-select {
   width: 200px;
   margin-left: 0.5rem;
@@ -23,6 +50,20 @@
 
 .status-badge {
   margin-left: 0.5rem;
+}
+
+.status-badge-header {
+  &.va-badge {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 1rem;
+    text-transform: uppercase;
+  }
+
+  .va-badge__text {
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
 }
 
 .request-actions {
@@ -76,4 +117,24 @@
 
 .cancel-button {
   margin-right: 0.5rem;
+}
+
+// System comment styles
+.system-comment {
+  opacity: 0.85;
+}
+
+.system-comment-card {
+  background-color: var(--va-background-secondary);
+  border-left: 3px solid var(--va-primary);
+}
+
+.system-comment-icon {
+  margin-right: 0.25rem;
+  color: var(--va-primary);
+}
+
+.system-comment-text {
+  font-style: italic;
+  color: var(--va-text-secondary);
 }

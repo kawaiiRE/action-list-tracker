@@ -257,12 +257,39 @@ export default defineComponent({
       } catch (error) {
         console.error('Error saving profile:', error)
       }
+    }, // Helper method to update selected request and comments
+    async updateSelectedRequestData() {
+      if (this.selectedRequest && this.selectedRequest.id) {
+        const updatedRequest = this.requests.find(
+          (req) => req.id === this.selectedRequest!.id,
+        )
+        if (updatedRequest) {
+          this.selectedRequest = updatedRequest
+
+          // Also refresh the comments for the selected request
+          if (this.selectedRequest.id) {
+            try {
+              this.selectedRequestComments = await getRequestComments(
+                this.selectedRequest.id,
+              )
+            } catch (error) {
+              console.error(
+                'Error refreshing selected request comments:',
+                error,
+              )
+            }
+          }
+        }
+      }
     },
 
     // Existing methods
     async loadRequests() {
       try {
         this.requests = await getAllRequests()
+
+        // Update selected request data if there's one selected
+        await this.updateSelectedRequestData()
       } catch (error) {
         console.error('Error loading requests:', error)
       }
@@ -302,23 +329,22 @@ export default defineComponent({
       }
     },
     // Modal event handlers
-    handleCommentAdded(requestId: string, commentText: string) {
-      this.handleComment({ id: requestId, text: commentText })
+    async handleCommentAdded(requestId: string, commentText: string) {
+      await this.handleComment({ id: requestId, text: commentText })
     },
-    handleCommentDeleted() {
-      this.loadRequests()
+    async handleCommentDeleted() {
+      await this.loadRequests()
     },
-    handleRequestUpdated() {
-      this.loadRequests()
+    async handleRequestUpdated() {
+      await this.loadRequests()
     },
-    handleRequestDeleted() {
-      this.loadRequests()
+    async handleRequestDeleted() {
+      await this.loadRequests()
       this.showRequestDetailsModal = false
     },
     handleEditRequest(request: ActionRequest) {
       this.selectedRequest = request
       this.showEditRequestModal = true
-      this.showRequestDetailsModal = false
     },
     confirmDeleteRequestFromList(request: ActionRequest) {
       this.selectedRequest = request
@@ -351,6 +377,9 @@ export default defineComponent({
     async reloadRequests() {
       try {
         this.requests = await getAllRequests()
+
+        // Update selected request data if there's one selected
+        await this.updateSelectedRequestData()
       } catch (error) {
         console.error('Error reloading requests:', error)
       }

@@ -155,6 +155,7 @@
         size="small"
         hide-default-actions
         fixed-layout
+        noOutsideDismiss
       >
         <div class="confirmation-dialog">
           <p>

@@ -5,21 +5,108 @@
 
   .export-fields {
     margin-bottom: 1.5rem;
-  }
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 
-  .export-field-checkbox {
-    margin-bottom: 0.5rem;
+    .fields-title {
+      margin: 0 0 1rem 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--va-text-primary);
+    }
+
+    .draggable-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .export-field-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border: 1px solid var(--va-background-border);
+      border-radius: var(--va-border-radius);
+      background-color: var(--va-background-secondary);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: var(--va-background-element);
+      }
+
+      .drag-handle {
+        display: flex;
+        align-items: center;
+        cursor: grab;
+        color: var(--va-text-secondary);
+
+        &:active {
+          cursor: grabbing;
+        }
+      }
+
+      .export-field-checkbox {
+        flex: 1;
+        margin: 0;
+      }
+
+      &.ghost {
+        opacity: 0.5;
+        background-color: var(--va-primary);
+      }
+
+      &.chosen {
+        background-color: var(--va-background-element);
+        border-color: var(--va-primary);
+      }
+
+      &.drag {
+        opacity: 0.8;
+        transform: rotate(5deg);
+      }
+    }
   }
 
   .export-options {
     margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .export-option-checkbox {
-    margin-bottom: 0.5rem;
+    display: block;
   }
 }
 
 .cancel-button {
   margin-right: 0.5rem;
+}
+
+.date-range-options {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--va-background-border);
+  border-radius: var(--va-border-radius);
+  background-color: var(--va-background-secondary);
+}
+
+.date-range-title {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--va-text-primary);
+}
+
+.date-range-inputs {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.date-input {
+  flex: 1;
+  min-width: 200px;
 }

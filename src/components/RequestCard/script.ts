@@ -5,6 +5,7 @@ import {
   type ActionRequest,
   type RequestComment,
 } from '@/services/firebase'
+import { getStatusColor } from '@/utils/statusColors'
 
 export default defineComponent({
   name: 'RequestCard',
@@ -45,16 +46,7 @@ export default defineComponent({
   },
   computed: {
     statusColor() {
-      switch (this.request.status) {
-        case 'Open':
-          return 'warning'
-        case 'In-Progress':
-          return 'primary'
-        case 'Closed':
-          return 'success'
-        default:
-          return 'secondary'
-      }
+      return getStatusColor(this.request.status)
     },
     formattedDate() {
       return new Date(this.request.createdAt).toLocaleDateString('en-US', {

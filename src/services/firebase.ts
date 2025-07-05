@@ -22,13 +22,31 @@ import {
 } from 'firebase/auth'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAraOkRAPZ6RZTgeaX3QcMFRNe9qM2FsEQ',
-  authDomain: 'aazad-properties.firebaseapp.com',
-  projectId: 'aazad-properties',
-  storageBucket: 'aazad-properties.appspot.com',
-  messagingSenderId: '275411023313',
-  appId: '1:275411023313:web:9cfaaa62b577fc1ccfdcf0',
-  measurementId: 'G-Y1G9PLEG3N',
+  apiKey: process.env.VUE_APP_FIREBASE_API_KEY || '',
+  authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN || '',
+  projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID || '',
+  storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET || '',
+  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID || '',
+  appId: process.env.VUE_APP_FIREBASE_APP_ID || '',
+  measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID || '',
+}
+
+// Validate that all required environment variables are present
+const requiredEnvVars = [
+  'VUE_APP_FIREBASE_API_KEY',
+  'VUE_APP_FIREBASE_AUTH_DOMAIN',
+  'VUE_APP_FIREBASE_PROJECT_ID',
+  'VUE_APP_FIREBASE_STORAGE_BUCKET',
+  'VUE_APP_FIREBASE_MESSAGING_SENDER_ID',
+  'VUE_APP_FIREBASE_APP_ID',
+]
+
+const missingVars = requiredEnvVars.filter((varName) => !process.env[varName])
+if (missingVars.length > 0) {
+  throw new Error(
+    `Missing required environment variables: ${missingVars.join(', ')}. ` +
+      'Please check your .env file and ensure all Firebase configuration variables are set.',
+  )
 }
 
 const firebaseApp = initializeApp(firebaseConfig)
@@ -103,7 +121,26 @@ export function getCurrentUser() {
 }
 
 // Permission functions
-export function hasPermission(userRole: UserRole, permission: string): boolean {
+const SUPERADMIN_EMAIL = process.env.VUE_APP_SUPERADMIN_EMAIL
+
+export function isSuperAdmin(email?: string | null): boolean {
+  if (!SUPERADMIN_EMAIL) {
+    console.warn('VUE_APP_SUPERADMIN_EMAIL environment variable is not set')
+    return false
+  }
+  return email === SUPERADMIN_EMAIL
+}
+
+export function hasPermission(
+  userRole: UserRole,
+  permission: string,
+  userEmail?: string | null,
+): boolean {
+  // Superadmin has all permissions
+  if (isSuperAdmin(userEmail)) {
+    return true
+  }
+
   const permissions = {
     viewer: ['view'],
     user: ['view', 'create', 'comment', 'edit_own', 'delete_own'],
@@ -122,11 +159,25 @@ export function hasPermission(userRole: UserRole, permission: string): boolean {
   return permissions[userRole]?.includes(permission) || false
 }
 
-export function canViewOnly(userRole: UserRole): boolean {
+export function canViewOnly(
+  userRole: UserRole,
+  userEmail?: string | null,
+): boolean {
+  // Superadmin is never view-only
+  if (isSuperAdmin(userEmail)) {
+    return false
+  }
   return userRole === 'viewer'
 }
 
-export function canManageUsers(userRole: UserRole): boolean {
+export function canManageUsers(
+  userRole: UserRole,
+  userEmail?: string | null,
+): boolean {
+  // Superadmin can always manage users
+  if (isSuperAdmin(userEmail)) {
+    return true
+  }
   return userRole === 'admin'
 }
 
@@ -138,7 +189,7 @@ export async function getAllUsers(): Promise<UserProfile[]> {
   }
 
   const userProfile = await getUserProfile(currentUser.uid)
-  if (!userProfile || !canManageUsers(userProfile.role)) {
+  if (!userProfile || !canManageUsers(userProfile.role, userProfile.email)) {
     throw new Error('Insufficient permissions to access users')
   }
 
@@ -170,7 +221,7 @@ export async function createUser(
   }
 
   const userProfile = await getUserProfile(currentUser.uid)
-  if (!userProfile || !canManageUsers(userProfile.role)) {
+  if (!userProfile || !canManageUsers(userProfile.role, userProfile.email)) {
     throw new Error('Insufficient permissions to create users')
   }
 
@@ -203,7 +254,7 @@ export async function updateUserRole(
   }
 
   const userProfile = await getUserProfile(currentUser.uid)
-  if (!userProfile || !canManageUsers(userProfile.role)) {
+  if (!userProfile || !canManageUsers(userProfile.role, userProfile.email)) {
     throw new Error('Insufficient permissions to update user roles')
   }
 
@@ -222,7 +273,7 @@ export async function deleteUser(uid: string): Promise<void> {
   }
 
   const userProfile = await getUserProfile(currentUser.uid)
-  if (!userProfile || !canManageUsers(userProfile.role)) {
+  if (!userProfile || !canManageUsers(userProfile.role, userProfile.email)) {
     throw new Error('Insufficient permissions to delete users')
   }
 
@@ -244,12 +295,15 @@ export async function initializeAdminUser(): Promise<void> {
     }
 
     // Create admin user
-    await createUserWithEmailAndPassword(auth, 'admin@admin.com', 'admin1234')
+    await createUserWithEmailAndPassword(
+      auth,
+      process.env.VUE_APP_DEFAULT_ADMIN_EMAIL || '',
+      process.env.VUE_APP_DEFAULT_ADMIN_PASSWORD || '',
+    )
 
     // Note: In a real application, you would want to handle this differently
     // as we can't easily get the UID of the created user in this context
     // For now, we'll create a script to initialize the admin user
-    console.log('Admin user created successfully')
   } catch (error) {
     console.error('Error initializing admin user:', error)
   }
@@ -374,7 +428,7 @@ export async function createNewRequest(
     throw new Error('User profile not found')
   }
 
-  if (!hasPermission(userProfile.role, 'create')) {
+  if (!hasPermission(userProfile.role, 'create', userProfile.email)) {
     throw new Error('Insufficient permissions to create requests')
   }
 
@@ -442,14 +496,14 @@ export async function deleteRequest(requestId: string): Promise<void> {
   }
 
   // Check if user can delete all requests or only their own
-  if (!hasPermission(userProfile.role, 'delete_all')) {
+  if (!hasPermission(userProfile.role, 'delete_all', userProfile.email)) {
     // Check if user owns this request
     const request = await getRequestById(requestId)
     if (!request || request.creatorId !== currentUser.uid) {
       throw new Error('Insufficient permissions to delete this request')
     }
 
-    if (!hasPermission(userProfile.role, 'delete_own')) {
+    if (!hasPermission(userProfile.role, 'delete_own', userProfile.email)) {
       throw new Error('Insufficient permissions to delete requests')
     }
   }
@@ -493,7 +547,7 @@ export async function addCommentToRequest(
     throw new Error('User profile not found')
   }
 
-  if (!hasPermission(userProfile.role, 'comment')) {
+  if (!hasPermission(userProfile.role, 'comment', userProfile.email)) {
     throw new Error('Insufficient permissions to add comments')
   }
 
@@ -525,7 +579,7 @@ export async function deleteComment(
   }
 
   // Check if user can delete all comments or only their own
-  if (!hasPermission(userProfile.role, 'delete_all')) {
+  if (!hasPermission(userProfile.role, 'delete_all', userProfile.email)) {
     // Get comment to check ownership
     const commentDoc = doc(
       firestore,
@@ -545,7 +599,7 @@ export async function deleteComment(
       throw new Error('Insufficient permissions to delete this comment')
     }
 
-    if (!hasPermission(userProfile.role, 'delete_own')) {
+    if (!hasPermission(userProfile.role, 'delete_own', userProfile.email)) {
       throw new Error('Insufficient permissions to delete comments')
     }
   }

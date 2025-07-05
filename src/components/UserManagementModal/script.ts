@@ -100,7 +100,7 @@ export default defineComponent({
 
       this.addingUser = true
       try {
-        await createUser(this.newUser.email, '1234', {
+        await createUser(this.newUser.email, '123456', {
           firstName: this.newUser.firstName,
           lastName: this.newUser.lastName,
           department: this.newUser.department,

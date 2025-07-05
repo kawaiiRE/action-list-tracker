@@ -3,18 +3,21 @@
  * Run this script to create the initial admin user
  */
 
+// Load environment variables
+require('dotenv').config()
+
 const { initializeApp } = require('firebase/app')
 const { getAuth, createUserWithEmailAndPassword } = require('firebase/auth')
 const { getFirestore, doc, setDoc } = require('firebase/firestore')
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAraOkRAPZ6RZTgeaX3QcMFRNe9qM2FsEQ',
-  authDomain: 'aazad-properties.firebaseapp.com',
-  projectId: 'aazad-properties',
-  storageBucket: 'aazad-properties.appspot.com',
-  messagingSenderId: '275411023313',
-  appId: '1:275411023313:web:9cfaaa62b577fc1ccfdcf0',
-  measurementId: 'G-Y1G9PLEG3N',
+  apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+  authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VUE_APP_FIREBASE_APP_ID,
+  measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID,
 }
 
 const app = initializeApp(firebaseConfig)
@@ -25,11 +28,18 @@ async function createAdminUser() {
   try {
     console.log('Creating admin user...')
 
+    const adminEmail = process.env.VUE_APP_DEFAULT_ADMIN_EMAIL
+    const adminPassword = process.env.VUE_APP_DEFAULT_ADMIN_PASSWORD
+
+    if (!adminEmail || !adminPassword) {
+      throw new Error('Admin email and password must be set in .env file')
+    }
+
     // Create admin user with email and password
     const userCredential = await createUserWithEmailAndPassword(
       auth,
-      'admin@admin.com',
-      'admin1234',
+      adminEmail,
+      adminPassword,
     )
 
     const user = userCredential.user
@@ -37,7 +47,7 @@ async function createAdminUser() {
 
     // Create admin user profile in Firestore
     await setDoc(doc(firestore, 'users', user.uid), {
-      email: 'admin@admin.com',
+      email: adminEmail,
       firstName: 'Admin',
       lastName: 'User',
       department: 'IT',
@@ -46,17 +56,9 @@ async function createAdminUser() {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     })
-
-    console.log('Admin user profile created successfully!')
-    console.log('Admin login credentials:')
-    console.log('Email: admin@admin.com')
-    console.log('Password: admin1234')
   } catch (error) {
     if (error.code === 'auth/email-already-in-use') {
       console.log('Admin user already exists!')
-      console.log('Login credentials:')
-      console.log('Email: admin@admin.com')
-      console.log('Password: admin1234')
     } else {
       console.error('Error creating admin user:', error)
     }

@@ -1,17 +1,20 @@
 // Run this script to create sample data in your Firestore database
 // Run with: node create-sample-data.js
 
+// Load environment variables
+require('dotenv').config()
+
 const { initializeApp } = require('firebase/app')
 const { getFirestore, collection, addDoc } = require('firebase/firestore')
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAraOkRAPZ6RZTgeaX3QcMFRNe9qM2FsEQ',
-  authDomain: 'aazad-properties.firebaseapp.com',
-  projectId: 'aazad-properties',
-  storageBucket: 'aazad-properties.appspot.com',
-  messagingSenderId: '275411023313',
-  appId: '1:275411023313:web:9cfaaa62b577fc1ccfdcf0',
-  measurementId: 'G-Y1G9PLEG3N',
+  apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+  authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VUE_APP_FIREBASE_APP_ID,
+  measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID,
 }
 
 const app = initializeApp(firebaseConfig)

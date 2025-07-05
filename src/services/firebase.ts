@@ -182,3 +182,22 @@ export async function addCommentToRequest(
   })
   return documentReference.id
 }
+
+export async function deleteComment(
+  requestId: string,
+  commentId: string,
+): Promise<void> {
+  try {
+    const commentDoc = doc(
+      firestore,
+      'requests',
+      requestId,
+      'comments',
+      commentId,
+    )
+    await deleteDoc(commentDoc)
+  } catch (error) {
+    console.error('Error deleting comment:', error)
+    throw error
+  }
+}

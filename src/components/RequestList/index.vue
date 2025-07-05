@@ -5,7 +5,8 @@
       :key="r.id"
       :request="r"
       @comment="emitComment"
-      @click="viewRequest"
+      @view-request="viewRequest"
+      @delete-request="deleteRequest"
     />
   </div>
 </template>

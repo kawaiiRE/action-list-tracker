@@ -55,6 +55,15 @@
           {{ showComments ? 'Hide' : 'Show' }} Comments
           <span v-if="comments.length > 0">({{ comments.length }})</span>
         </va-button>
+        <va-button
+          @click="deleteRequest"
+          color="danger"
+          size="small"
+          icon="delete"
+          outline
+        >
+          Delete
+        </va-button>
       </div>
 
       <!-- Comments section -->

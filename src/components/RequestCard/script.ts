@@ -9,6 +9,7 @@ import {
 export default defineComponent({
   name: 'RequestCard',
   components: { AddComment },
+  emits: ['comment', 'view-request', 'delete-request'],
   props: {
     request: {
       type: Object as PropType<ActionRequest>,
@@ -50,7 +51,10 @@ export default defineComponent({
       this.viewDetails()
     },
     viewDetails() {
-      this.$router.push(`/requests/${this.request.id}`)
+      this.$emit('view-request', this.request)
+    },
+    deleteRequest() {
+      this.$emit('delete-request', this.request)
     },
     async onComment(text: string) {
       if (!this.request.id) return

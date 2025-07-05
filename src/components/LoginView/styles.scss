@@ -1,10 +1,33 @@
 .login-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  // justify-content: center;
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 2rem;
+
+  h1 {
+    margin: 0 0 0.5rem 0;
+    color: white;
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .logos-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .login-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 70dvh;
+    align-items: center;
+    gap: 1rem;
+  }
 }
 
 .login-card {
@@ -13,16 +36,15 @@
 
   .va-card__title {
     padding-bottom: 1.5rem;
-
-    h2 {
-      margin: 0 0 0.5rem 0;
-      color: var(--va-primary);
-    }
-
     .subtitle {
       margin: 0;
       color: var(--va-secondary);
       font-size: 0.875rem;
     }
+  }
+
+  .login-input {
+    width: 100%;
+    margin-bottom: 1rem;
   }
 }

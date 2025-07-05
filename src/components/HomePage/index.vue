@@ -19,6 +19,11 @@
     <va-navbar color="primary" class="mb-4">
       <template #left>
         <va-navbar-item>
+          <img
+            src="@/assets/1730296212_1713508690_Bawabat Alsenaya 5.webp"
+            alt="Logo"
+            class="logo"
+          />
           <h2>AZAD Properties : BAS - Project Integration</h2>
         </va-navbar-item>
       </template>
@@ -189,7 +194,23 @@
       </div>
 
       <!-- Request Details Modal -->
-      <va-modal v-model="showModal" title="Request Details" size="large">
+      <va-modal
+        v-model="showModal"
+        title="Request Details"
+        size="large"
+        hide-default-actions
+      >
+        <template #header>
+          <div class="d-flex align-center pb-3">
+            <h4 class="flex-grow-1">Request Details</h4>
+            <va-button
+              @click="showModal = false"
+              icon="close"
+              preset="plain"
+              class="mr-3"
+            />
+          </div>
+        </template>
         <div v-if="selectedRequest">
           <va-card>
             <va-card-title>{{ selectedRequest.title }}</va-card-title>

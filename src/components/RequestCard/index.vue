@@ -10,7 +10,6 @@
           class="status-badge"
         />
       </div>
-
       <!-- Request metadata -->
       <div class="request-meta">
         <div class="meta-item">
@@ -46,7 +45,7 @@
         >
           View Details
         </va-button>
-        <va-button
+        <!-- <va-button
           v-if="!isViewOnly"
           @click="toggleComments"
           outline
@@ -55,7 +54,7 @@
         >
           {{ showComments ? 'Hide' : 'Show' }} Comments
           <span v-if="comments.length > 0">({{ comments.length }})</span>
-        </va-button>
+        </va-button> -->
         <va-button
           v-if="canDeleteThis"
           @click="deleteRequest"
@@ -67,19 +66,17 @@
           Delete
         </va-button>
       </div>
+      <span v-if="comments.length > 0">Comments: ({{ comments.length }})</span>
 
-      <!-- Comments section -->
-      <va-collapse v-model="showComments">
+      <!-- <va-collapse v-model="showComments">
         <div class="comments-section">
           <h4>Comments</h4>
 
-          <!-- Loading comments -->
           <div v-if="loadingComments" class="loading-comments">
             <va-progress-circle indeterminate size="small" />
             <span>Loading comments...</span>
           </div>
 
-          <!-- Existing comments -->
           <div v-else-if="comments.length > 0" class="comments-list">
             <div
               v-for="comment in comments"
@@ -95,24 +92,21 @@
             </div>
           </div>
 
-          <!-- No comments message -->
           <div v-else class="no-comments">
             <p>No comments yet. Be the first to add one!</p>
           </div>
 
-          <!-- Add comment form -->
           <div v-if="canCommentThis" class="add-comment-section">
             <add-comment @submit="onComment" />
           </div>
 
-          <!-- View only message -->
           <div v-else-if="isViewOnly" class="view-only-message">
             <p class="text-muted">
               <em>You have view-only access and cannot add comments.</em>
             </p>
           </div>
         </div>
-      </va-collapse>
+      </va-collapse> -->
     </va-card-content>
   </va-card>
 </template>

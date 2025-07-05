@@ -8,18 +8,14 @@ if not exist ".git" (
     exit /b 1
 )
 
-REM Check for uncommitted changes
-git status --porcelain > nul 2>&1
-if not errorlevel 1 (
-    echo 📝 Found uncommitted changes. You may want to commit them first.
-    git status --short
-    set /p response="Do you want to continue with deployment? (y/N): "
-    if /i not "%response%"=="y" (
-        echo ❌ Deployment cancelled.
-        pause
-        exit /b 1
-    )
-)
+REM Check for uncommitted changes and commit them
+echo 📝 Checking for uncommitted changes...
+git add .
+git commit -m "Update source code - %date% %time%"
+
+REM Push to main branch (ignore errors if nothing to push)
+echo ⬆️ Pushing changes to main branch...
+git push origin main
 
 REM Build the project
 echo 🔨 Building the project...

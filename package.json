@@ -11,9 +11,10 @@
     "start": "node server.js",
     "format": "prettier --write .",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist --dotfiles",
-    "deploy:clean": "gh-pages -d dist --dotfiles --remove \"*.map\"",
-    "deploy:source": "git add . && git commit -m \"Update source\" && git push origin main"
+    "deploy": "deploy.bat",
+    "deploy:source": "git add . && git commit -m \"Update source code\" && git push origin main || echo \"No changes to commit\"",
+    "deploy:gh-pages": "gh-pages -d dist --dotfiles --message \"Deploy to gh-pages\"",
+    "deploy:clean": "gh-pages -d dist --dotfiles --remove \"*.map\" --message \"Clean deploy to gh-pages\""
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
@@ -30,6 +31,7 @@
     "@vue/cli-plugin-typescript": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
     "@vue/tsconfig": "^0.7.0",
+    "gh-pages": "^6.3.0",
     "material-design-icons-iconfont": "^6.7.0",
     "sass": "^1.69.5",
     "sass-loader": "^16.0.5",

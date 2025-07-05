@@ -14,14 +14,27 @@ if (!(Test-Path ".git")) {
 # Check for uncommitted changes in source code
 $gitStatus = git status --porcelain
 if ($gitStatus) {
-    Write-Host "📝 Found uncommitted changes. You may want to commit them first." -ForegroundColor Yellow
-    Write-Host "Current changes:" -ForegroundColor Yellow
-    git status --short
-    $response = Read-Host "Do you want to continue with deployment? (y/N)"
-    if ($response -ne "y" -and $response -ne "Y") {
-        Write-Host "❌ Deployment cancelled." -ForegroundColor Red
+    Write-Host "📝 Found uncommitted changes. Committing to main branch..." -ForegroundColor Yellow
+    
+    # Add all changes
+    git add .
+    
+    # Commit with timestamp
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    git commit -m "Update source code - $timestamp"
+    
+    # Push to main branch
+    Write-Host "⬆️ Pushing changes to main branch..." -ForegroundColor Blue
+    git push origin main
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "❌ Failed to push to main branch" -ForegroundColor Red
         exit 1
     }
+    
+    Write-Host "✅ Successfully pushed to main branch" -ForegroundColor Green
+} else {
+    Write-Host "✅ No uncommitted changes found" -ForegroundColor Green
 }
 
 # Build the project
@@ -33,12 +46,15 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
+Write-Host "✅ Build completed successfully" -ForegroundColor Green
+
 # Deploy to gh-pages branch
 Write-Host "🚀 Deploying to gh-pages branch..." -ForegroundColor Blue
-npx gh-pages -d dist --dotfiles
+$deployTimestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+gh-pages -d dist --dotfiles --message "Deploy to gh-pages - $deployTimestamp"
 
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "✅ Deployment successful!" -ForegroundColor Green
+    Write-Host "🎉 Deployment successful!" -ForegroundColor Green
     Write-Host "🌐 Your app will be available at: https://kawaiiRE.github.io/action-list-tracker/" -ForegroundColor Cyan
     Write-Host "⏳ GitHub Pages deployment may take a few minutes to complete." -ForegroundColor Yellow
 } else {

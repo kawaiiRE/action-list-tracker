@@ -1,29 +1,29 @@
 <template>
-  <!-- Show login view if user is not authenticated -->
-  <LoginView v-if="!isAuthenticated" @login-success="handleLoginSuccess" />
+  <!-- Show loading state while checking authentication -->
+  <div v-if="authLoading" class="loading-container">
+    <div class="loading-content">
+      <va-icon name="autorenew" spin size="large" color="primary" />
+      <p class="mt-3">Loading...</p>
+    </div>
+  </div>
+
+  <!-- Show login view if user is not authenticated or session expired -->
+  <LoginView
+    v-else-if="!isAuthenticated"
+    @login-success="handleLoginSuccess"
+    :session-expired="sessionExpired"
+  />
 
   <!-- Main app content when authenticated -->
-  <div v-else>
+  <div class="body" v-else>
     <va-navbar color="primary" class="mb-4">
       <template #left>
         <va-navbar-item>
-          <h2>Action Tracker</h2>
+          <h2>AAZAD Properties</h2>
         </va-navbar-item>
       </template>
       <template #right>
         <div class="d-flex align-center">
-          <!-- Admin User Management Button -->
-          <va-button
-            v-if="canManageUsers"
-            @click="showUserManagementModal = true"
-            color="secondary"
-            icon="people"
-            preset="plain"
-            class="mr-2"
-          >
-            Users
-          </va-button>
-
           <UserAvatar
             :user-profile="currentUserProfile"
             @edit-profile="openProfileModal"
@@ -33,10 +33,10 @@
       </template>
     </va-navbar>
 
-    <va-container>
+    <va-container class="main-content">
       <!-- Home Page Selection Boxes -->
       <div v-if="currentView === 'home'" class="home-page">
-        <h2 class="mb-4">Action Tracker Dashboard</h2>
+        <h2 class="mb-4">AAZAD Properties Dashboard</h2>
         <div class="action-boxes">
           <va-card
             v-for="(box, key) in availableActions"

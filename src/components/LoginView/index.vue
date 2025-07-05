@@ -2,11 +2,23 @@
   <div class="login-container">
     <va-card class="login-card">
       <va-card-title class="text-center">
-        <h2>Action Tracker</h2>
+        <h2>AAZAD Properties</h2>
         <p class="subtitle">Sign in to your account</p>
       </va-card-title>
 
       <va-card-content>
+        <!-- Session expired alert -->
+        <va-alert
+          v-if="sessionExpired"
+          color="warning"
+          class="mb-4"
+          border="left"
+          border-color="warning"
+        >
+          <template #title>Session Expired</template>
+          Your session has expired. Please log in again to continue.
+        </va-alert>
+
         <form @submit.prevent="handleLogin">
           <va-input
             v-model="form.email"

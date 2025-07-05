@@ -4,6 +4,12 @@ import { signIn } from '@/services/firebase'
 export default defineComponent({
   name: 'LoginView',
   emits: ['login-success'],
+  props: {
+    sessionExpired: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       isLoggingIn: false,

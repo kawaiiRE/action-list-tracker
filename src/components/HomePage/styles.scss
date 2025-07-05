@@ -1,4 +1,12 @@
-/* HomePage Styles */
+.body {
+  height: 100dvh;
+}
+
+.main-content {
+  display: block;
+  padding: 1.5rem;
+}
+
 .request-card {
   margin-bottom: 1rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -116,5 +124,25 @@
       font-size: 0.9rem;
       line-height: 1.4;
     }
+  }
+}
+
+/* Loading state styles */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--va-background-primary);
+}
+
+.loading-content {
+  text-align: center;
+  padding: 2rem;
+
+  p {
+    color: var(--va-text-primary);
+    font-size: 1.1rem;
+    margin: 0;
   }
 }

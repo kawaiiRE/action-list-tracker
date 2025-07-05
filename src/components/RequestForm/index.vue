@@ -4,14 +4,6 @@
     <va-card-content>
       <form @submit.prevent="onSubmit" class="request-form">
         <div class="form-grid">
-          <va-input
-            v-model="form.creator"
-            label="Creator Name"
-            placeholder="Enter your name"
-            :rules="[(v) => !!v || 'Creator name is required']"
-            required
-          />
-
           <va-select
             v-model="form.department"
             label="Department"

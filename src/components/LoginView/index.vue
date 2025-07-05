@@ -2,7 +2,7 @@
   <div class="login-container">
     <va-card class="login-card">
       <va-card-title class="text-center">
-        <h2>AAZAD Properties</h2>
+        <h2>AZAD Properties : BAS - Project Integration</h2>
         <p class="subtitle">Sign in to your account</p>
       </va-card-title>
 

@@ -8,6 +8,7 @@ import {
   type UserProfile,
   type UserRole,
 } from '@/services/firebase'
+import { DEPARTMENTS } from '@/constants/departments'
 
 export default defineComponent({
   name: 'UserManagementModal',
@@ -40,6 +41,7 @@ export default defineComponent({
         { value: 'user', text: 'User' },
         { value: 'admin', text: 'Admin' },
       ],
+      departments: DEPARTMENTS,
       columns: [
         { key: 'name', label: 'Name' },
         { key: 'email', label: 'Email' },

@@ -19,7 +19,7 @@
     <va-navbar color="primary" class="mb-4">
       <template #left>
         <va-navbar-item>
-          <h2>AAZAD Properties</h2>
+          <h2>AZAD Properties : BAS - Project Integration</h2>
         </va-navbar-item>
       </template>
       <template #right>
@@ -36,7 +36,7 @@
     <va-container class="main-content">
       <!-- Home Page Selection Boxes -->
       <div v-if="currentView === 'home'" class="home-page">
-        <h2 class="mb-4">AAZAD Properties Dashboard</h2>
+        <h2 class="mb-4">AZAD Properties : BAS - Project Integration Dashboard</h2>
         <div class="action-boxes">
           <va-card
             v-for="(box, key) in availableActions"
@@ -102,7 +102,7 @@
             />
             <va-select
               v-model="filters.department"
-              :options="['All', 'Sales', 'Legal', 'Finance', 'Other']"
+              :options="departmentOptions"
               label="Filter by Department"
               class="filter-select"
             />

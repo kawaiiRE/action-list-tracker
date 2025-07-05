@@ -1,5 +1,6 @@
 import { defineComponent, type PropType } from 'vue'
 import { type UserProfile } from '@/services/firebase'
+import { DEPARTMENTS } from '@/constants/departments'
 
 export default defineComponent({
   name: 'UserProfileModal',
@@ -17,16 +18,7 @@ export default defineComponent({
   data() {
     return {
       isSaving: false,
-      departments: [
-        'Sales',
-        'Legal',
-        'Finance',
-        'IT',
-        'HR',
-        'Marketing',
-        'Operations',
-        'Other',
-      ],
+      departments: DEPARTMENTS,
       form: {
         firstName: '',
         lastName: '',

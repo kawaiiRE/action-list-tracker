@@ -50,9 +50,10 @@
                 />
               </div>
               <div class="flex md6">
-                <va-input
+                <va-select
                   v-model="newUser.department"
                   label="Department"
+                  :options="departments"
                   :rules="[required]"
                   class="mb-3"
                 />

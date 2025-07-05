@@ -18,6 +18,7 @@ import {
   type RequestComment,
   type UserProfile,
 } from '@/services/firebase'
+import { DEPARTMENTS, DEPARTMENT_OPTIONS } from '@/constants/departments'
 
 export default defineComponent({
   name: 'HomePage',
@@ -67,6 +68,11 @@ export default defineComponent({
     }
   },
   computed: {
+    // Department options
+    departmentOptions(): string[] {
+      return DEPARTMENT_OPTIONS
+    },
+
     // Authentication computed properties from store
     isAuthenticated(): boolean {
       return userStore.isAuthenticated

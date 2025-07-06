@@ -5,6 +5,13 @@ import type { UserProfile } from '@/services/firebase'
 
 export default defineComponent({
   name: 'RequestForm',
+  props: {
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  emits: ['submit'],
   data() {
     return {
       form: {
@@ -15,7 +22,6 @@ export default defineComponent({
       },
       statuses: ['Open', 'In-Progress', 'Closed'],
       departments: DEPARTMENTS,
-      isSubmitting: false,
     }
   },
   computed: {
@@ -32,14 +38,10 @@ export default defineComponent({
   },
   methods: {
     async onSubmit() {
-      if (!this.isValid || this.isSubmitting) return
+      if (!this.isValid || this.loading) return
 
-      this.isSubmitting = true
-      try {
-        this.$emit('submit', { ...this.form })
-      } finally {
-        this.isSubmitting = false
-      }
+      // Emit the submit event with form data
+      this.$emit('submit', { ...this.form })
     },
     resetForm() {
       this.form = {

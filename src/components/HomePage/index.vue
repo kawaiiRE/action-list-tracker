@@ -199,7 +199,11 @@
           Back
         </va-button>
         <h3 class="add-request-title">Add New Request</h3>
-        <RequestForm @submit="handleNewRequest" />
+        <RequestForm
+          ref="requestForm"
+          @submit="handleNewRequest"
+          :loading="isCreatingRequest"
+        />
       </div>
 
       <!-- Request Details Modal -->

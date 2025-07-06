@@ -104,9 +104,70 @@
     }
   }
 
-  // .form-actions {
-  //   flex-direction: column;
-  // }
+  // Mobile focus improvements
+  .form-input,
+  .form-textarea,
+  .status-select {
+    // Ensure proper focus on mobile
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+
+    // Prevent zoom on focus (iOS)
+    font-size: 16px;
+
+    // Ensure proper keyboard opening
+    input,
+    textarea,
+    select {
+      font-size: 16px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    // Better touch targets
+    min-height: 44px;
+
+    // Improved focus states
+    &:focus-within {
+      outline: 2px solid var(--va-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  .form-textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+}
+
+// Ensure all input fields are properly focusable
+.form-input,
+.form-textarea,
+.status-select {
+  // Improve accessibility
+  position: relative;
+  z-index: 1;
+
+  // Ensure proper event handling
+  pointer-events: auto;
+  touch-action: manipulation;
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
 }
 
 @media (min-width: 1200px) {

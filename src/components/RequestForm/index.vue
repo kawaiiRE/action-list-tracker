@@ -29,6 +29,9 @@
           :rules="[(v) => !!v || 'Title is required']"
           required
           class="form-input"
+          autocomplete="off"
+          spellcheck="true"
+          :tabindex="1"
         />
 
         <va-select
@@ -39,6 +42,7 @@
           :rules="[(v) => !!v || 'Receiver department is required']"
           required
           class="form-input"
+          :tabindex="2"
         />
 
         <va-textarea
@@ -47,6 +51,9 @@
           placeholder="Provide detailed information about your request..."
           :rows="4"
           class="form-textarea"
+          autocomplete="off"
+          spellcheck="true"
+          :tabindex="3"
         />
 
         <va-select
@@ -56,6 +63,7 @@
           :rules="[(v) => !!v || 'Status is required']"
           required
           class="status-select"
+          :tabindex="4"
         />
 
         <div class="form-actions">
@@ -63,7 +71,7 @@
             type="button"
             @click="resetForm"
             outline
-            :disabled="isSubmitting"
+            :disabled="loading"
           >
             Reset Form
           </va-button>
@@ -71,8 +79,8 @@
           <va-button
             type="submit"
             color="primary"
-            :disabled="!isValid || isSubmitting"
-            :loading="isSubmitting"
+            :disabled="!isValid || loading"
+            :loading="loading"
           >
             Create Request
           </va-button>

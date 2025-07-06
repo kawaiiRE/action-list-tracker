@@ -63,6 +63,9 @@ export default defineComponent({
         dateTo: null as Date | null,
       },
       showAdvancedFilters: false,
+
+      // Prevent duplicate submissions
+      isCreatingRequest: false,
     }
   },
   computed: {
@@ -295,15 +298,43 @@ export default defineComponent({
       }
     },
     async handleNewRequest(requestData: any) {
+      // Prevent duplicate submissions
+      if (this.isCreatingRequest) {
+        return
+      }
+
+      this.isCreatingRequest = true
+
       try {
-        await createNewRequest({
-          ...requestData,
-          createdAt: Date.now(),
+        const requestId = await createNewRequest(requestData)
+
+        // Clear the form after successful submission
+        if (this.$refs.requestForm) {
+          ;(this.$refs.requestForm as any).resetForm()
+        }
+
+        // Show success toast
+        this.$vaToast.init({
+          message: 'Request created successfully!',
+          color: 'success',
+          duration: 3000,
+          position: 'top-right',
         })
+
         await this.loadRequests() // Refresh the list
         this.currentView = 'home' // Switch back to home view
       } catch (error) {
         console.error('Error adding request:', error)
+
+        // Show error toast
+        this.$vaToast.init({
+          message: 'Failed to create request. Please try again.',
+          color: 'danger',
+          duration: 4000,
+          position: 'top-right',
+        })
+      } finally {
+        this.isCreatingRequest = false
       }
     },
     async handleComment(payload: { id: string; text: string }) {

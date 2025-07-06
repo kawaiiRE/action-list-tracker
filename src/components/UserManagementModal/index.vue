@@ -5,6 +5,7 @@
     hide-default-actions
     fixed-layout
     noOutsideDismiss
+    :mobile-fullscreen="false"
   >
     <template #header>
       <div class="modal-header">
@@ -160,6 +161,7 @@
         hide-default-actions
         fixed-layout
         noOutsideDismiss
+        :mobile-fullscreen="false"
       >
         <div class="confirmation-dialog">
           <p>

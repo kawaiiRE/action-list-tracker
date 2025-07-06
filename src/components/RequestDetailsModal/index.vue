@@ -5,6 +5,7 @@
     hide-default-actions
     fixed-layout
     noOutsideDismiss
+    :mobile-fullscreen="false"
   >
     <template #header>
       <div class="modal-header">
@@ -196,7 +197,7 @@
                             color="primary"
                             size="small"
                             :loading="savingComment"
-                            :disabled="!editCommentText.trim()"
+                            :disabled="!editCommentText?.trim()"
                             class="save-edit-btn"
                           >
                             Save
@@ -242,6 +243,7 @@
       title="Confirm Delete"
       size="small"
       :hideDefaultActions="true"
+      :mobile-fullscreen="false"
     >
       <div class="confirmation-dialog">
         <p>
@@ -273,6 +275,7 @@
       title="Confirm Delete"
       size="small"
       :hideDefaultActions="true"
+      :mobile-fullscreen="false"
     >
       <div class="confirmation-dialog">
         <p>

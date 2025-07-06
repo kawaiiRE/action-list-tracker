@@ -40,9 +40,9 @@ export default defineComponent({
     },
     isFormValid() {
       return (
-        this.editForm.title.trim() &&
+        this.editForm.title?.trim() &&
         this.editForm.receiverDepartment &&
-        this.editForm.details.trim() &&
+        this.editForm.details?.trim() &&
         this.editForm.status
       )
     },

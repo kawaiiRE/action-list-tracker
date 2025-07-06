@@ -31,10 +31,10 @@ export default defineComponent({
   computed: {
     isFormValid() {
       return (
-        this.form.firstName.trim() &&
-        this.form.lastName.trim() &&
+        this.form.firstName?.trim() &&
+        this.form.lastName?.trim() &&
         this.form.department &&
-        this.form.title.trim()
+        this.form.title?.trim()
       )
     },
   },
@@ -73,10 +73,10 @@ export default defineComponent({
       this.isSaving = true
       try {
         this.$emit('saved', {
-          firstName: this.form.firstName.trim(),
-          lastName: this.form.lastName.trim(),
+          firstName: this.form.firstName?.trim(),
+          lastName: this.form.lastName?.trim(),
           department: this.form.department,
-          title: this.form.title.trim(),
+          title: this.form.title?.trim(),
         })
       } catch (error) {
         console.error('Error in form submission:', error)

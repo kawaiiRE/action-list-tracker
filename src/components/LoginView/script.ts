@@ -49,7 +49,7 @@ export default defineComponent({
       this.loginError = ''
 
       try {
-        await signIn(this.form.email.trim(), this.form.password)
+        await signIn(this.form.email?.trim(), this.form.password)
         this.$emit('login-success')
       } catch (error: any) {
         console.error('Login failed:', error)

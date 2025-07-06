@@ -15,7 +15,7 @@ export default defineComponent({
   },
   computed: {
     isValid() {
-      return this.text.trim().length > 0
+      return this.text?.trim().length > 0
     },
   },
   methods: {
@@ -23,7 +23,7 @@ export default defineComponent({
       if (!this.isValid || this.isSubmittingComment) return
 
       try {
-        this.$emit('submit', this.text.trim())
+        this.$emit('submit', this.text?.trim())
         this.text = ''
       } catch (error) {
         console.error('Error submitting comment:', error)

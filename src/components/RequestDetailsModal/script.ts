@@ -218,7 +218,7 @@ export default defineComponent({
       if (
         !this.request ||
         !this.editingCommentId ||
-        !this.editCommentText.trim()
+        !this.editCommentText?.trim()
       )
         return
 
@@ -227,7 +227,7 @@ export default defineComponent({
         await updateComment(
           this.request.id!,
           this.editingCommentId,
-          this.editCommentText.trim(),
+          this.editCommentText?.trim(),
         )
         this.$vaToast.init({
           message: 'Comment updated successfully',

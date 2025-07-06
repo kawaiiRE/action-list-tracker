@@ -24,7 +24,7 @@ export default defineComponent({
     },
     isValid() {
       return (
-        this.form.title.trim() &&
+        this.form.title?.trim() &&
         this.form.status &&
         this.form.receiverDepartment
       )

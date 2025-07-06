@@ -19,7 +19,7 @@ export default defineComponent({
     fullName() {
       if (!this.userProfile) return 'User'
       return (
-        `${this.userProfile.firstName} ${this.userProfile.lastName}`.trim() ||
+        `${this.userProfile.firstName} ${this.userProfile.lastName}`?.trim() ||
         'User'
       )
     },

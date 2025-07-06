@@ -4,10 +4,34 @@
   gap: 1rem;
 }
 
+@media (max-width: 480px) {
+  .requests-grid {
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .requests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
 @media (min-width: 1200px) {
   .requests-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
     gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 1600px) {
+  .requests-grid {
+    grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+    gap: 2rem;
+    max-width: 1600px;
   }
 }

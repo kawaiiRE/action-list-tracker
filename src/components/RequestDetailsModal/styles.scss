@@ -27,9 +27,37 @@
   color: var(--va-text-secondary);
 }
 
+// Request header with ID and title
+.request-header {
+  margin-bottom: 1rem;
+}
+
+.request-id-title {
+  .request-id {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--va-text-secondary);
+    margin-bottom: 0.5rem;
+  }
+}
+
 // Modal title
 .modal-title {
   flex: 1;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  line-height: 1.3;
+  margin-right: 1rem;
+}
+
+// Request title wrapping
+.request-title-wrap {
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  line-height: 1.4;
+  white-space: normal;
 }
 
 // Close button
@@ -84,6 +112,58 @@
   margin-bottom: 1rem;
 }
 
+// Comments section
+.comments-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--va-background-border);
+}
+
+.comments-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  color: var(--va-text-secondary);
+}
+
+// .comments-list {
+//   max-height: 400px;
+//   overflow-y: auto;
+//   margin-bottom: 1rem;
+// }
+
+.comment-item {
+  margin-bottom: 1rem;
+}
+
+.comment-content {
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+  }
+
+  .comment-author {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+  }
+
+  .comment-delete-btn {
+    flex-shrink: 0;
+    margin-left: 1rem;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
 .comment-meta {
   display: flex;
   justify-content: space-between;
@@ -98,6 +178,9 @@
 
 .no-comments {
   color: var(--va-text-secondary);
+  text-align: center;
+  padding: 2rem;
+  font-style: italic;
 }
 
 .view-only-message {
@@ -106,17 +189,23 @@
 
 .confirmation-dialog {
   padding: 1.5rem;
+
+  p {
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    color: var(--va-text-primary);
+  }
 }
 
 .dialog-actions {
   display: flex;
   justify-content: flex-end;
   margin-top: 1.5rem;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .cancel-button {
-  margin-right: 0.5rem;
+  margin-right: 0;
 }
 
 // System comment styles
@@ -137,4 +226,324 @@
 .system-comment-text {
   font-style: italic;
   color: var(--va-text-secondary);
+}
+
+// Comment styles
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.comment-author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.comment-menu {
+  margin-left: auto;
+}
+
+.comment-menu-button {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.dropdown-item {
+  cursor: pointer;
+  padding: 0.5rem;
+
+  &:hover {
+    background-color: var(--va-background-element);
+  }
+
+  &.danger {
+    color: var(--va-danger);
+
+    &:hover {
+      background-color: var(--va-danger);
+      color: white;
+    }
+  }
+}
+
+.edited-badge {
+  font-size: 0.75rem;
+  color: var(--va-text-secondary);
+  font-style: italic;
+  margin-left: 0.5rem;
+}
+
+.comment-edit-form {
+  margin-top: 0.5rem;
+}
+
+.comment-edit-input {
+  margin-bottom: 0.75rem;
+}
+
+.comment-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.cancel-edit-btn,
+.save-edit-btn {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.8rem;
+}
+
+// Responsive design
+@media (max-width: 480px) {
+  //   .modal-header {
+  //     flex-direction: column;
+  //     align-items: flex-start;
+  //     gap: 1rem;
+  //     padding-bottom: 0.75rem;
+  //   }
+
+  .modal-title {
+    margin-right: 0;
+    width: 100%;
+  }
+
+  //   .header-actions {
+  //     width: 100%;
+  //     justify-content: space-between;
+  //   }
+
+  .status-container {
+    padding: 0.2rem 0.4rem;
+  }
+
+  .status-label {
+    font-size: 0.8rem;
+  }
+
+  .request-id-title .request-id {
+    font-size: 0.9rem;
+  }
+
+  .request-title-wrap {
+    font-size: 1.1rem;
+    line-height: 1.3;
+  }
+
+  .request-field {
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .request-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .request-actions .va-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .comments-section {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+  }
+
+  .comments-loading {
+    padding: 1.5rem;
+  }
+
+  .comment-item {
+    margin-bottom: 0.75rem;
+  }
+
+  .comment-content {
+    .comment-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .comment-delete-btn {
+      margin-left: 0;
+      align-self: flex-end;
+    }
+  }
+
+  .comment-input {
+    margin-bottom: 0.75rem;
+  }
+
+  // Mobile-friendly confirmation dialog
+  .confirmation-dialog {
+    padding: 1rem;
+
+    p {
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+
+    .va-button {
+      width: 100%;
+    }
+  }
+
+  // Comment editing styles
+  .comment-header {
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+  }
+
+  .comment-author {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .comment-menu {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+
+  .comment-edit-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .cancel-edit-btn,
+  .save-edit-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-header {
+    gap: 0.75rem;
+  }
+
+  .request-actions {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .comment-content {
+    .comment-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .comment-delete-btn {
+      margin-left: 0;
+      align-self: flex-end;
+    }
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .va-button {
+      width: 100%;
+    }
+  }
+
+  // Comment editing styles
+  .comment-header {
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+  }
+
+  .comment-author {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .comment-menu {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+
+  .comment-edit-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .cancel-edit-btn,
+  .save-edit-btn {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .request-field {
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .comment-item {
+    margin-bottom: 1rem;
+  }
+
+  .comment-input {
+    margin-bottom: 1.25rem;
+  }
+
+  .comments-section {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+  }
+
+  .comments-loading {
+    padding: 2.5rem;
+  }
+
+  .confirmation-dialog {
+    padding: 2rem;
+
+    p {
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+  }
+
+  .dialog-actions {
+    margin-top: 2rem;
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .modal-header {
+    padding-bottom: 1.25rem;
+  }
+
+  .request-field {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .comment-item {
+    margin-bottom: 1.25rem;
+  }
+
+  .comments-section {
+    margin-top: 3rem;
+    padding-top: 2.5rem;
+  }
 }

@@ -30,7 +30,14 @@
 
     <div v-if="request">
       <va-card>
-        <va-card-title>{{ request.title }}</va-card-title>
+        <div class="request-header">
+          <div class="request-id-title">
+            <div class="request-id">#{{ request.requestNumber }}</div>
+            <va-card-title class="request-title-wrap">{{
+              request.title
+            }}</va-card-title>
+          </div>
+        </div>
         <va-card-content>
           <div class="request-field">
             <strong>Status:</strong>
@@ -88,10 +95,11 @@
           <!-- Comments Section -->
           <div class="comments-section">
             <h4>Comments</h4>
-            <div v-if="isLoadingComments">
-              <va-icon name="autorenew" spin size="large" color="primary" />
+            <div v-if="isLoadingComments" class="comments-loading">
+              <va-progress-circle indeterminate size="small" />
+              <span class="loading-text">Loading comments...</span>
             </div>
-            <div v-else-if="comments.length > 0">
+            <div v-else-if="comments.length > 0" class="comments-list">
               <div
                 v-for="comment in comments"
                 :key="comment.id"
@@ -102,41 +110,108 @@
                   :class="{ 'system-comment-card': comment.isSystemComment }"
                 >
                   <va-card-content>
-                    <div class="comment-meta">
-                      <div>
-                        <va-icon
-                          v-if="comment.isSystemComment"
-                          name="settings"
-                          size="small"
-                          class="system-comment-icon"
-                        />
-                        <strong>{{ comment.authorName }}</strong>
-                        <span class="comment-date">{{
-                          formatDate(comment.createdAt)
-                        }}</span>
+                    <div class="comment-content">
+                      <div class="comment-header">
+                        <div class="comment-author">
+                          <va-icon
+                            v-if="comment.isSystemComment"
+                            name="settings"
+                            size="small"
+                            class="system-comment-icon"
+                          />
+                          <strong>{{ comment.authorName }}</strong>
+                          <span class="comment-date">{{
+                            formatDate(comment.createdAt)
+                          }}</span>
+                          <span v-if="comment.isEdited" class="edited-badge">
+                            (edited)
+                          </span>
+                        </div>
+                        <va-dropdown
+                          v-if="
+                            !isViewOnly &&
+                            !comment.isSystemComment &&
+                            comment.authorId === currentUserId
+                          "
+                          class="comment-menu"
+                          placement="bottom-end"
+                        >
+                          <template #anchor>
+                            <va-button
+                              icon="more_vert"
+                              preset="plain"
+                              size="small"
+                              class="comment-menu-button"
+                            />
+                          </template>
+                          <va-dropdown-content>
+                            <va-list>
+                              <va-list-item
+                                @click="startEditComment(comment)"
+                                class="dropdown-item"
+                              >
+                                <va-list-item-section>
+                                  <va-icon name="edit" size="small" />
+                                </va-list-item-section>
+                                <va-list-item-section>
+                                  Edit
+                                </va-list-item-section>
+                              </va-list-item>
+                              <va-list-item
+                                @click="confirmDeleteComment(comment.id)"
+                                class="dropdown-item danger"
+                              >
+                                <va-list-item-section>
+                                  <va-icon name="delete" size="small" />
+                                </va-list-item-section>
+                                <va-list-item-section>
+                                  Delete
+                                </va-list-item-section>
+                              </va-list-item>
+                            </va-list>
+                          </va-dropdown-content>
+                        </va-dropdown>
                       </div>
-                      <va-button
-                        v-if="
-                          !isViewOnly &&
-                          !comment.isSystemComment &&
-                          (canDelete ||
-                            canDeleteAll ||
-                            comment.authorId === currentUserId)
-                        "
-                        @click="confirmDeleteComment(comment.id)"
-                        color="danger"
-                        icon="delete"
-                        size="small"
-                        preset="plain"
-                      />
+                      <div
+                        v-if="editingCommentId === comment.id"
+                        class="comment-edit-form"
+                      >
+                        <va-textarea
+                          v-model="editCommentText"
+                          placeholder="Edit your comment..."
+                          :rows="3"
+                          class="comment-edit-input"
+                        />
+                        <div class="comment-edit-actions">
+                          <va-button
+                            @click="cancelEditComment"
+                            color="secondary"
+                            size="small"
+                            class="cancel-edit-btn"
+                          >
+                            Cancel
+                          </va-button>
+                          <va-button
+                            @click="saveEditComment"
+                            color="primary"
+                            size="small"
+                            :loading="savingComment"
+                            :disabled="!editCommentText.trim()"
+                            class="save-edit-btn"
+                          >
+                            Save
+                          </va-button>
+                        </div>
+                      </div>
+                      <p
+                        v-else
+                        :class="{
+                          'system-comment-text': comment.isSystemComment,
+                        }"
+                      >
+                        {{ comment.text }}
+                      </p>
                     </div>
-                    <p
-                      :class="{
-                        'system-comment-text': comment.isSystemComment,
-                      }"
-                    >
-                      {{ comment.text }}
-                    </p>
                   </va-card-content>
                 </va-card>
               </div>

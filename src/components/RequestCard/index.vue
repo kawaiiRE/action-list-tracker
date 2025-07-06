@@ -1,9 +1,12 @@
 <template>
   <va-card class="request-card clickable-card" @click="handleCardClick">
     <va-card-content>
-      <!-- Header with title and status -->
+      <!-- Header with ID, title and status -->
       <div class="card-header">
-        <h3 class="request-title">{{ request.title }}</h3>
+        <div class="title-section">
+          <div class="request-id">#{{ request.requestNumber }}</div>
+          <h3 class="request-title">{{ request.title }}</h3>
+        </div>
         <va-badge
           :text="request.status"
           :color="statusColor"

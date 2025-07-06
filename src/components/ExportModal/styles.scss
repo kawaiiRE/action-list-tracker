@@ -110,3 +110,105 @@
   flex: 1;
   min-width: 200px;
 }
+
+// Responsive design
+@media (max-width: 480px) {
+  .export-modal-content {
+    .export-description {
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .export-fields {
+      margin-bottom: 1rem;
+    }
+
+    .export-field-item {
+      padding: 0.75rem 0.5rem;
+
+      .drag-handle {
+        display: none; // Hide drag handle on mobile
+      }
+    }
+  }
+
+  .date-range-options {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .date-range-inputs {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .date-input {
+    min-width: auto;
+  }
+
+  .export-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .va-button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .export-modal-content {
+    .export-field-item {
+      .drag-handle {
+        display: none; // Hide drag handle on tablets
+      }
+    }
+  }
+
+  .date-range-inputs {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .date-input {
+    min-width: auto;
+  }
+
+  .export-actions {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .export-modal-content {
+    .export-description {
+      margin-bottom: 2rem;
+    }
+
+    .export-fields {
+      margin-bottom: 2rem;
+    }
+
+    .export-field-item {
+      padding: 0.75rem;
+    }
+  }
+
+  .date-range-options {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .date-range-inputs {
+    gap: 1.5rem;
+  }
+
+  .date-input {
+    min-width: 250px;
+  }
+}
+
+.export-button {
+  padding: 0 0.5rem !important;
+}

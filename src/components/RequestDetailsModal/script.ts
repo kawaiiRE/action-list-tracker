@@ -6,6 +6,7 @@ import {
   deleteComment as deleteCommentFromFirebase,
   addCommentToRequest,
   addSystemCommentToRequest,
+  updateComment,
 } from '@/services/firebase'
 import AddComment from '@/components/AddComment/index.vue'
 import { getStatusColor } from '@/utils/statusColors'
@@ -69,6 +70,9 @@ export default defineComponent({
       editableStatus: '',
       statusOptions: ['Open', 'In-Progress', 'Closed'],
       isLoadingComments: false,
+      editingCommentId: null as string | null,
+      editCommentText: '',
+      savingComment: false,
     }
   },
   computed: {
@@ -200,6 +204,45 @@ export default defineComponent({
         })
       } finally {
         this.deletingComment = false
+      }
+    },
+    startEditComment(comment: RequestComment) {
+      this.editingCommentId = comment.id!
+      this.editCommentText = comment.text
+    },
+    cancelEditComment() {
+      this.editingCommentId = null
+      this.editCommentText = ''
+    },
+    async saveEditComment() {
+      if (
+        !this.request ||
+        !this.editingCommentId ||
+        !this.editCommentText.trim()
+      )
+        return
+
+      this.savingComment = true
+      try {
+        await updateComment(
+          this.request.id!,
+          this.editingCommentId,
+          this.editCommentText.trim(),
+        )
+        this.$vaToast.init({
+          message: 'Comment updated successfully',
+          color: 'success',
+        })
+        this.cancelEditComment()
+        this.$emit('reload-data')
+      } catch (error) {
+        console.error('Error updating comment:', error)
+        this.$vaToast.init({
+          message: 'Error updating comment',
+          color: 'danger',
+        })
+      } finally {
+        this.savingComment = false
       }
     },
     formatDate(timestamp: number) {

@@ -93,19 +93,23 @@
             icon="arrow_back"
             preset="plain"
             class="back-button"
+            border-color="primary"
           >
-            Back to Home
+            Back
           </va-button>
-          <h3 class="requests-title">Action Requests</h3>
           <va-button
             @click="openExportModal"
             icon="download"
             color="primary"
             preset="secondary"
+            border-color="primary"
+            class="export-button"
           >
             Export Excel
           </va-button>
         </div>
+        <h3 class="requests-title">Action Requests</h3>
+
         <div class="filters-container">
           <!-- Search Bar -->
           <va-input
@@ -148,7 +152,7 @@
             <va-collapse v-model="showAdvancedFilters">
               <template #header>
                 <va-button
-                  @click="showAdvancedFilters = !showAdvancedFilters"
+                  @click="toggleAdvancedFilters"
                   preset="plain"
                   icon="tune"
                   size="small"
@@ -190,17 +194,16 @@
 
       <!-- Add Request View -->
       <div v-if="currentView === 'add-request'">
-        <div class="add-request-header">
-          <va-button
-            @click="goHome"
-            icon="arrow_back"
-            preset="plain"
-            class="back-button"
-          >
-            Back to Home
-          </va-button>
-          <h3>Add New Request</h3>
-        </div>
+        <va-button
+          @click="goHome"
+          icon="arrow_back"
+          preset="plain"
+          class="back-button"
+          border-color="primary"
+        >
+          Back
+        </va-button>
+        <h3 class="add-request-title">Add New Request</h3>
         <RequestForm @submit="handleNewRequest" />
       </div>
 

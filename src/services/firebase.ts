@@ -11,6 +11,7 @@ import {
   deleteDoc,
   updateDoc,
   setDoc,
+  runTransaction,
 } from 'firebase/firestore'
 import {
   getAuth,
@@ -74,6 +75,7 @@ export interface UserProfile {
 
 export interface ActionRequest {
   id?: string
+  requestNumber: number // Sequential number starting from 1
   // Sender information (who is sending the request)
   senderId: string
   senderName: string
@@ -95,7 +97,9 @@ export interface RequestComment {
   authorId: string
   authorName: string
   createdAt: number
+  updatedAt?: number
   isSystemComment?: boolean
+  isEdited?: boolean
 }
 
 // Auth functions
@@ -439,7 +443,12 @@ export async function getAllRequests(filters?: {
 export async function createNewRequest(
   requestData: Omit<
     ActionRequest,
-    'id' | 'createdAt' | 'senderId' | 'senderName' | 'senderDepartment'
+    | 'id'
+    | 'createdAt'
+    | 'senderId'
+    | 'senderName'
+    | 'senderDepartment'
+    | 'requestNumber'
   >,
 ): Promise<string> {
   const currentUser = getCurrentUser()
@@ -456,16 +465,36 @@ export async function createNewRequest(
     throw new Error('Insufficient permissions to create requests')
   }
 
-  const fullRequestData = {
-    ...requestData,
-    senderId: currentUser.uid,
-    senderName: `${userProfile.firstName} ${userProfile.lastName}`,
-    senderDepartment: userProfile.department,
-    createdAt: Date.now(),
-  }
+  // Use transaction to atomically increment the request counter
+  const result = await runTransaction(firestore, async (transaction) => {
+    const counterDocRef = doc(firestore, 'metadata', 'requestCounter')
+    const counterDoc = await transaction.get(counterDocRef)
 
-  const documentReference = await addDoc(requestsCollection, fullRequestData)
-  return documentReference.id
+    let nextRequestNumber = 1
+    if (counterDoc.exists()) {
+      nextRequestNumber = counterDoc.data().nextNumber || 1
+    }
+
+    // Update the counter
+    transaction.set(counterDocRef, { nextNumber: nextRequestNumber + 1 })
+
+    // Create the request with the sequential number
+    const fullRequestData = {
+      ...requestData,
+      requestNumber: nextRequestNumber,
+      senderId: currentUser.uid,
+      senderName: `${userProfile.firstName} ${userProfile.lastName}`,
+      senderDepartment: userProfile.department,
+      createdAt: Date.now(),
+    }
+
+    const requestDocRef = doc(requestsCollection)
+    transaction.set(requestDocRef, fullRequestData)
+
+    return requestDocRef.id
+  })
+
+  return result
 }
 
 export async function getRequestComments(
@@ -673,4 +702,54 @@ export async function addSystemCommentToRequest(
     isSystemComment: true,
   })
   return documentReference.id
+}
+
+export async function updateComment(
+  requestId: string,
+  commentId: string,
+  commentText: string,
+): Promise<void> {
+  const currentUser = getCurrentUser()
+  if (!currentUser) {
+    throw new Error('User must be authenticated to update comments')
+  }
+
+  const userProfile = await getUserProfile(currentUser.uid)
+  if (!userProfile) {
+    throw new Error('User profile not found')
+  }
+
+  // Get comment to check ownership
+  const commentDoc = doc(
+    firestore,
+    'requests',
+    requestId,
+    'comments',
+    commentId,
+  )
+  const commentSnapshot = await getDoc(commentDoc)
+
+  if (!commentSnapshot.exists()) {
+    throw new Error('Comment not found')
+  }
+
+  const comment = commentSnapshot.data()
+  if (comment.authorId !== currentUser.uid) {
+    throw new Error('You can only edit your own comments')
+  }
+
+  if (!hasPermission(userProfile.role, 'comment', userProfile.email)) {
+    throw new Error('Insufficient permissions to update comments')
+  }
+
+  try {
+    await updateDoc(commentDoc, {
+      text: commentText,
+      updatedAt: Date.now(),
+      isEdited: true,
+    })
+  } catch (error) {
+    console.error('Error updating comment:', error)
+    throw error
+  }
 }

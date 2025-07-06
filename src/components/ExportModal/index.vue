@@ -1,7 +1,6 @@
 <template>
   <va-modal
     v-model="isVisible"
-    title="Export Requests to Excel"
     size="medium"
     max-width="600px"
     hide-default-actions
@@ -99,6 +98,8 @@
         color="primary"
         :loading="exportLoading"
         :disabled="!hasSelectedFields"
+        border-color="primary"
+        class="export-button"
       >
         Export Excel
       </va-button>

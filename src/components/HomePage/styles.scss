@@ -93,15 +93,19 @@
 .requests-header {
   display: flex;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
+  justify-content: space-between;
 }
 
 .back-button {
-  margin-right: 1rem;
+  border: 1.5px solid var(--va-primary);
+  padding: 0 0.5rem !important;
 }
 
 .requests-title {
   flex: 1;
+  justify-self: center;
+  margin-bottom: 1.5rem;
 }
 
 .filters-container {
@@ -135,9 +139,8 @@
 }
 
 /* Add request view */
-.add-request-header {
-  display: flex;
-  align-items: center;
+.add-request-title {
+  justify-self: center;
   margin-bottom: 1.5rem;
 }
 
@@ -238,9 +241,56 @@
 /* Legacy utility classes - remove these gradually */
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
+  .main-content {
+    padding: 1rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
   .action-boxes {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .action-box {
+    min-width: unset;
+    max-width: 100%;
+    min-height: 150px;
+  }
+
+  .filters-section .main-filters {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .filter-select {
+      min-width: auto;
+      width: 100%;
+    }
+  }
+
+  .va-navbar__right {
+    width: max-content;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1.25rem;
+  }
+
+  .action-boxes {
+    gap: 1rem;
+  }
+
+  .action-box {
+    min-width: 280px;
+    max-width: 100%;
+    min-height: 180px;
   }
 
   .filters-section .main-filters {
@@ -251,11 +301,41 @@
       width: 100%;
     }
   }
+}
 
-  .requests-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+@media (min-width: 1200px) {
+  .main-content {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .action-boxes {
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .action-box {
+    min-width: 320px;
+    max-width: 400px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .main-content {
+    padding: 2.5rem;
+    max-width: 1600px;
+  }
+
+  .action-boxes {
+    gap: 2.5rem;
+    max-width: 1400px;
+  }
+
+  .action-box {
+    min-width: 350px;
+    max-width: 450px;
   }
 }
 
@@ -263,11 +343,15 @@
   flex-grow: 1;
 }
 
-.va-navbar__item {
-  width: max-content;
-}
-
 .logo {
   height: 5rem;
   padding-right: 1rem;
+}
+
+.va-navbar {
+  grid-template: 'left center right' / auto 0 auto !important;
+}
+
+.export-button {
+  padding: 0 0.5rem !important;
 }

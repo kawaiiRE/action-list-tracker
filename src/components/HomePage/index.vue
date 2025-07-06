@@ -151,12 +151,7 @@
             <!-- Advanced Filters (collapsed by default) -->
             <va-collapse v-model="showAdvancedFilters">
               <template #header>
-                <va-button
-                  @click="toggleAdvancedFilters"
-                  preset="plain"
-                  icon="tune"
-                  size="small"
-                >
+                <va-button preset="plain" icon="tune" size="small">
                   {{ showAdvancedFilters ? 'Hide' : 'Show' }} Advanced Filters
                 </va-button>
               </template>

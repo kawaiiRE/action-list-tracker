@@ -221,12 +221,6 @@ export default defineComponent({
       },
       immediate: true,
     },
-    showAdvancedFilters: {
-      handler(newVal: boolean) {
-        console.log('Advanced filters toggled WATCH:', newVal)
-      },
-      immediate: true,
-    },
   },
   methods: {
     // Authentication methods using userStore
@@ -389,11 +383,6 @@ export default defineComponent({
       } catch (error) {
         console.error('Error reloading requests:', error)
       }
-    },
-
-    toggleAdvancedFilters() {
-      this.showAdvancedFilters = !this.showAdvancedFilters
-      console.log('Advanced filters toggled:', this.showAdvancedFilters)
     },
   },
 })
